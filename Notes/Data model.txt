@@ -1,5 +1,4 @@
-Data model
-
+Data mod
 User
 - email
 - - STRING
