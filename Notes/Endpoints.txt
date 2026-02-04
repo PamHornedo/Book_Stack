@@ -1,0 +1,14 @@
+Endpoints
+
+Register
+- user creates an account
+Login
+- user logs in 
+Book Page
+- Just shows the books from our base book db
+Review page
+- Posts of review for books
+
+If a person clicks a book on the book page, it will take them to the review page for that book. 
+
+We will create a based book db that is seeded with some random titles.
