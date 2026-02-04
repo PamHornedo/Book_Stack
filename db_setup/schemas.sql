@@ -1,0 +1,16 @@
+CREATE DATABASE bookstack_db;
+\c books_db;
+
+CREATE TABLE user (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE books (
+   id SERIAL PRIMARY KEY,
+   title VARCHAR(255) NOT NULL,
+   review VARCHAR(1000),
+);
