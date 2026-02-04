@@ -1,0 +1,21 @@
+Data mod
+User
+- email
+- - STRING
+- - - validate as email
+
+- password
+- - STRING (50)
+- - - validate for 3, 50
+- - make sure to hash it 
+
+Primary Content
+- Book Title
+- - STRING (100)
+- - - validate for over 100 characters
+
+
+Secondary Content
+- Review of Book
+- - STRING (1000) 
+- - - validate for over 1000 characters
