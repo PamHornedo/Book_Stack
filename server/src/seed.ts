@@ -14,36 +14,61 @@ async function seed() {
   const book = await Book.bulkCreate([
     {
       title: 'Braiding Sweetgrass',
-      body: 'Indigenous Wisdom, Scientific Knowledge, and the Teachings of Plants is a non-fiction book by botanist and Citizen Potawatomi Nation member Robin Wall Kimmerer that blends scientific and Indigenous perspectives on the natural world.',
+      body: 'Indigenous Wisdom, Scientific Knowledge, and the Teachings of Plants is a non-fiction book by botanist and Citizen Potawatomi Nation member Robin Wall Kimmerer.',
       userId: users[0].id
     },
     {
       title: 'How does async/await work?',
       body: 'Can someone explain async/await and how it relates to promises?',
       userId: users[1].id
-    }
-  ])
-  
-  // Create answers
-  const answers = await Answer.bulkCreate([
+    },
     {
-      body: 'A closure is when a function retains access to variables from its outer scope...',
-      questionId: questions[0].id,
+      title: 'The Overstory',
+      body: 'A novel by Richard Powers that weaves together multiple stories of people whose lives are transformed by trees and the natural world.',
+      userId: users[0].id
+    },
+    {
+      title: 'Understanding React Hooks',
+      body: 'What are the best practices for using useState and useEffect? I keep running into infinite loops.',
       userId: users[1].id
     },
     {
-      body: 'Async/await is syntactic sugar for working with promises...',
-      questionId: questions[1].id,
+      title: 'Sand Talk',
+      body: 'How Indigenous Thinking Can Save the World by Tyson Yunkaporta explores Indigenous knowledge systems and their application to contemporary global challenges.',
       userId: users[0].id
     }
   ])
   
-  // Create votes
-  await Vote.bulkCreate([
-    { answerId: answers[0].id, userId: users[0].id, type: 'up' },
-    { answerId: answers[0].id, userId: users[2].id, type: 'up' },
-    { answerId: answers[1].id, userId: users[1].id, type: 'up' }
+  // Create answers
+  const reviews = await Review.bulkCreate([
+    {
+      body: 'Good book! Highly recommend it for anyone interested in nature and indigenous perspectives.',
+      bookId: book[0].id,
+      userId: users[1].id
+    },
+    {
+      body: 'I found this book very insightful and thought-provoking.',
+      bookId: book[1].id,
+      userId: users[2].id
+    },
+    {
+      body: 'The Overstory is a masterpiece of storytelling.',
+      bookId: book[2].id,
+      userId: users[0].id
+    },
+    {
+      body: 'React Hooks are a powerful way to manage state in functional components.',
+      bookId: book[3].id,
+      userId: users[1].id
+    },
+    {
+      body: 'Sand Talk offers a fresh perspective on Indigenous knowledge systems.',
+      bookId: book[4].id,
+      userId: users[2].id
+    }
   ])
+  
+
   
   console.log('✓ Database seeded successfully')
   process.exit(0)
