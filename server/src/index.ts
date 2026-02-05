@@ -3,11 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import sequelize, { testConnection } from './config/database';
 import authRoutes from './routes/auth';
-import bookRoutes from './routes/book';
-import reviewRoutes from './routes/review';
-import User from './models/User';
-import Book from './models/Book';
-import Review from './models/Review';
+import questionRoutes from './routes/questions';
+import answerRoutes from './routes/answers';
+import voteRoutes from './routes/votes';
+import './models';
 
 dotenv.config();
 
@@ -23,8 +22,9 @@ const PORT = process.env.PORT || 4000;
 
 // TODO: Add routes
  app.use('/api/auth', authRoutes);
- app.use('/api/book', bookRoutes);
- app.use('/api/review', reviewRoutes);
+ app.use('/api/questions', questionRoutes);
+ app.use('/api/answers', answerRoutes);
+ app.use('/api/votes', voteRoutes);
 
 // TODO: Add a test route
  app.get('/api/health', (req, res) => {
