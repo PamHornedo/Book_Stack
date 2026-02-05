@@ -6,7 +6,7 @@ import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
-// TODO: POST /api/auth/register - Register a new user
+// POST /api/auth/register - Register a new user
 router.post("/register", async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
@@ -51,7 +51,7 @@ router.post("/register", async (req: Request, res: Response) => {
   }
 });
 
-// TODO: POST /api/auth/login - Login user
+// POST /api/auth/login - Login user
 router.post("/login", async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -96,7 +96,7 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-// TODO: GET /api/auth/profile - Get current user profile (protected route)
+// GET /api/auth/profile - Get current user profile (protected route)
 router.get("/profile", authenticate, async (req: Request, res: Response) => {
   try {
     const user = await User.findByPk(req.user!.id, {

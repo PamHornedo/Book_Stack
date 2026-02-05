@@ -1,7 +1,7 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
-import User from './User';
-import Question from './Question';
+import { DataTypes, Model, Optional } from "sequelize";
+import sequelize from "../config/database";
+import User from "./User";
+import Question from "./Book";
 
 // TODO: Define Answer attributes interface
 // Hint: Answer should have id, body, questionId, userId, createdAt, updatedAt
@@ -9,10 +9,12 @@ interface AnswerAttributes {
   // TODO: Add properties here
 }
 
-interface AnswerCreationAttributes extends Optional<AnswerAttributes, 'id'> {}
+interface AnswerCreationAttributes extends Optional<AnswerAttributes, "id"> {}
 
 // TODO: Create the Answer class extending Model
-class Answer extends Model<AnswerAttributes, AnswerCreationAttributes> implements AnswerAttributes {
+class Answer
+  extends Model<AnswerAttributes, AnswerCreationAttributes>
+  implements AnswerAttributes {
   // TODO: Declare public properties
 }
 
@@ -28,9 +30,9 @@ Answer.init(
   },
   {
     sequelize,
-    modelName: 'Answer',
-    tableName: 'answers'
-  }
+    modelName: "Answer",
+    tableName: "answers",
+  },
 );
 
 // TODO: Define associations
