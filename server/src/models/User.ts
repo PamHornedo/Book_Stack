@@ -2,8 +2,7 @@ import { DataTypes, Model, Optional } from "sequelize";
 import bcrypt from "bcrypt";
 import sequelize from "../config/database";
 
-// TODO: Define the User attributes interface
-// Hint: User should have id, username, email, password, createdAt, updatedAt
+// Define the User attributes interface
 interface UserAttributes {
   id: number;
   username: string;
@@ -13,12 +12,12 @@ interface UserAttributes {
   updatedAt?: Date;
 }
 
-// TODO: Define optional attributes for creation (id, timestamps are auto-generated)
+// Define optional attributes for creation (id, timestamps are auto-generated)
 interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
 
 process.env.BCRYPT_SALT_ROUNDS || "10";
 
-// TODO: Create the User class extending Model
+// Create the User class extending Model
 class User
   extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes
@@ -35,7 +34,7 @@ class User
   }
 }
 
-// TODO: Initialize the User model
+// Initialize the User model
 User.init(
   {
     id: {
