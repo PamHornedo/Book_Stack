@@ -1,17 +1,19 @@
-import { sequelize, User, Book, Review} from './models'
+import sequelize from './config/database';
+import { User, Question, Answer, Vote } from './models';
 
 async function seed() {
-  await sequelize.sync({ force: true })
-  
-  // Create users
-  const users = await User.bulkCreate([
-    { username: 'Thomas', email: 'Thomas@dev.com', password: 'password123' },
-    { username: 'Pamela', email: 'Pamela@dev.com', password: 'password123' },
-    { username: 'Joseph', email: 'Joseph@dev.com', password: 'password123' }
-  ])
-  
-  // Create books
-  const book = await Book.bulkCreate([
+  await sequelize.sync({ force: true });
+
+  const users = await User.bulkCreate(
+    [
+      { username: 'Thomas', email: 'thomas@dev.com', password: 'password123' },
+      { username: 'Pamela', email: 'pamela@dev.com', password: 'password123' },
+      { username: 'Joseph', email: 'joseph@dev.com', password: 'password123' },
+    ],
+    { individualHooks: true }
+  );
+
+  const questions = await Question.bulkCreate([
     {
       title: 'Braiding Sweetgrass',
       body: 'Indigenous Wisdom, Scientific Knowledge, and the Teachings of Plants is a non-fiction book by botanist and Citizen Potawatomi Nation member Robin Wall Kimmerer.',
@@ -74,4 +76,4 @@ async function seed() {
   process.exit(0)
 }
 
-seed()
+seed();

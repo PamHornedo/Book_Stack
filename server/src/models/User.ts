@@ -7,7 +7,8 @@ interface UserAttributes {
   id: number;
   username: string;
   email: string;
-  password: string;
+  passwordHash: string;
+  password?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -59,7 +60,7 @@ User.init(
       },
     },
     email: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(255),
       allowNull: false,
       unique: true,
       validate: {
@@ -71,6 +72,7 @@ User.init(
     password: {
       type: DataTypes.STRING(255),
       allowNull: false,
+      field: 'password_hash',
       validate: {
         notNull: { msg: "Password is required" },
         notEmpty: { msg: "Password cannot be empty" },
@@ -83,8 +85,14 @@ User.init(
     modelName: "User",
     tableName: "users",
     hooks: {
-      // TODO: Add beforeCreate hook to hash password
-      // Hint: Check if password exists and hash it with bcrypt
+      beforeValidate: async (user: User) => {
+        if (!user.password) {
+          return;
+        }
+        const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
+        user.passwordHash = await bcrypt.hash(user.password, saltRounds);
+        (user as User & { _passwordHashed?: boolean })._passwordHashed = true;
+      },
       beforeCreate: async (user: User) => {
         const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10");
         const hashedPassword = await bcrypt.hash(user.password, saltRounds);
