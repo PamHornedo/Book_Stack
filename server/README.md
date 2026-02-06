@@ -23,12 +23,21 @@ cp .env.example .env
 
 # Create database
 createdb devqa
+createdb seedtest
 
 # Run development server
 npm run dev
 ```
 
 Server will run on http://localhost:4000
+
+## Running Tests
+
+Backend tests use Vitest + Supertest and mock the Sequelize models, so they do not require a live database connection. If you want a dedicated test DB for future integration tests, create `seedtest` as shown above.
+
+```bash
+npm test
+```
 
 ## Your Tasks
 
@@ -73,6 +82,8 @@ server/
 │   │   ├── questions.ts       📝 TODO - Day 2
 │   │   ├── answers.ts         📝 TODO - Day 2
 │   │   └── votes.ts           📝 TODO - Day 3
+│   ├── tests/
+│   │   └── auth.test.ts
 │   └── index.ts               📝 TODO - Day 1
 ├── package.json
 ├── tsconfig.json

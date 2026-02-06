@@ -1,5 +1,7 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import { DataTypes, Model, Optional } from "sequelize";
+import sequelize from "../config/database";
+import User from "./User";
+import Answer from "./Review";
 
 interface VoteAttributes {
   id: number;
@@ -10,17 +12,16 @@ interface VoteAttributes {
   updatedAt?: Date;
 }
 
-interface VoteCreationAttributes extends Optional<VoteAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
+interface VoteCreationAttributes extends Optional<VoteAttributes, "id"> {}
 
-class Vote extends Model<VoteAttributes, VoteCreationAttributes> implements VoteAttributes {
-  public id!: number;
-  public type!: 'up' | 'down';
-  public answerId!: number;
-  public userId!: number;
-  public readonly createdAt?: Date;
-  public readonly updatedAt?: Date;
+// TODO: Create the Vote class extending Model
+class Vote
+  extends Model<VoteAttributes, VoteCreationAttributes>
+  implements VoteAttributes {
+  // TODO: Declare public properties
 }
 
+// TODO: Initialize the Vote model
 Vote.init(
   {
     id: {
@@ -57,16 +58,17 @@ Vote.init(
   },
   {
     sequelize,
-    modelName: 'Vote',
-    tableName: 'votes',
-    underscored: true,
+    modelName: "Vote",
+    tableName: "votes",
     indexes: [
-      {
-        unique: true,
-        fields: ['answer_id', 'user_id'],
-      },
+      // TODO: Add unique index for userId + answerId
+      // This prevents a user from voting multiple times on same answer
+      // {
+      //   unique: true,
+      //   fields: ['userId', 'answerId']
+      // }
     ],
-  }
+  },
 );
 
 export default Vote;

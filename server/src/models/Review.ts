@@ -1,5 +1,7 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import { DataTypes, Model, Optional } from "sequelize";
+import sequelize from "../config/database";
+import User from "./User";
+import Question from "./Book";
 
 interface AnswerAttributes {
   id: number;
@@ -10,17 +12,16 @@ interface AnswerAttributes {
   updatedAt?: Date;
 }
 
-interface AnswerCreationAttributes extends Optional<AnswerAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
+interface AnswerCreationAttributes extends Optional<AnswerAttributes, "id"> {}
 
-class Answer extends Model<AnswerAttributes, AnswerCreationAttributes> implements AnswerAttributes {
-  public id!: number;
-  public body!: string;
-  public questionId!: number;
-  public userId!: number;
-  public readonly createdAt?: Date;
-  public readonly updatedAt?: Date;
+// TODO: Create the Answer class extending Model
+class Answer
+  extends Model<AnswerAttributes, AnswerCreationAttributes>
+  implements AnswerAttributes {
+  // TODO: Declare public properties
 }
 
+// TODO: Initialize the Answer model
 Answer.init(
   {
     id: {
