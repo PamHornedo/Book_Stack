@@ -3,7 +3,7 @@ import cors from 'cors';
 import authRoutes from './routes/auth';
 import questionRoutes from './routes/questions';
 import answerRoutes from './routes/answers';
-import voteRoutes from './routes/votes';
+import voteRoutes from './routes/users';
 
 export const createApp = () => {
   const app = express();

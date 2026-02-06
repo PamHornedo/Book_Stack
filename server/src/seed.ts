@@ -1,5 +1,5 @@
 import sequelize from './config/database';
-import { User, Question, Answer, Vote } from './models';
+import { User, Question, Answer, Vote } from './models/Index';
 
 async function seed() {
   await sequelize.sync({ force: true });
