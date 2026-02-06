@@ -21,7 +21,62 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-//get book by title
-router.get('/', )
+//We can do this one that adds a search param to the standard route, or......
+//router.get('/', async (req: Request, res: Response) => {
+//  try {
+//    const { title } = req.query;
+//    
+//    if (title) {
+//      const books = await Book.findAll({
+//        where: {
+//          title: {
+//            [Op.like]: `%${title}%` // Case-insensitive partial match
+//          }
+//        },
+//        order: [['createdAt', 'DESC']],
+//      });
+//      return res.json(books);
+//    }
+//    
+//    // Otherwise, return all books/
+ //   const books = await Book.findAll({
+//      order: [['createdAt', 'DESC']],
+//    });
+//    res.json(books);
+//  }
+//  catch (error) {
+//    console.error('Error fetching books:', error);
+//    res.status(500).json({message: 'error fetching books'});
+//  }
+//});
+
+//if we wanted to have a designated search route then we can do this one instead. I am not sure
+//for the configuration of our app which one would be better? 
+// router.get('/search', async (req: Request, res: Response) => {
+//   try {
+//     const { title } = req.query;
+
+//     if (!title || typeof title !== 'string') {
+//       return res.status(400).json({ 
+//         message: 'Please provide a title search parameter' 
+//       });
+//     }
+
+//     const books = await Book.findAll({
+//       where: {
+//         title: {
+//           [Op.iLike]: `%${title}%` // Case-insensitive partial match
+//         }
+//       },
+//       order: [['createdAt', 'DESC']],
+//     });
+
+//     res.json(books);
+
+//   } catch (error) {
+//     console.error('Error searching books:', error);
+//     res.status(500).json({ message: 'Error searching books' });
+//   }
+// });
 
 export default router;
