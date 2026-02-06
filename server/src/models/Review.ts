@@ -1,28 +1,33 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/database";
 import User from "./User";
-import Question from "./Book";
+import Book from "./Book";
 
-interface AnswerAttributes {
+interface ReviewAttributes {
   id: number;
   body: string;
-  questionId: number;
+  bookId: number;
   userId: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-interface AnswerCreationAttributes extends Optional<AnswerAttributes, "id"> {}
+interface ReviewCreationAttributes extends Optional<ReviewAttributes, "id"> {}
 
-// TODO: Create the Answer class extending Model
-class Answer
-  extends Model<AnswerAttributes, AnswerCreationAttributes>
-  implements AnswerAttributes {
-  // TODO: Declare public properties
+class Review
+  extends Model<ReviewAttributes, ReviewCreationAttributes>
+  implements ReviewAttributes
+{
+  public id!: number;
+  public body!: string;
+  public bookId!: number;
+  public userId!: number;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
-// TODO: Initialize the Answer model
-Answer.init(
+Review.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -33,33 +38,33 @@ Answer.init(
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
-        notNull: { msg: 'Body is required' },
-        notEmpty: { msg: 'Body is required' },
+        notNull: { msg: "Body is required" },
+        notEmpty: { msg: "Body is required" },
       },
     },
-    questionId: {
+    bookId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'questions',
-        key: 'id',
+        model: "books",
+        key: "id",
       },
     },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
-        key: 'id',
+        model: "users",
+        key: "id",
       },
     },
   },
   {
     sequelize,
-    modelName: 'Answer',
-    tableName: 'answers',
+    modelName: "Review",
+    tableName: "reviews",
     underscored: true,
-  }
+  },
 );
 
-export default Answer;
+export default Review;
