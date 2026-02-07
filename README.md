@@ -1,6 +1,6 @@
 # Book Stack
 
-A full-stack book & review platform where reclearaders can ask questions about books and provide reviews. Built as a capstone project demonstrating a complete client-server architecture with a modern tech stack.
+A full-stack book & review platform where readers can ask questions about books and provide reviews. Built as a capstone project demonstrating a complete client-server architecture with a modern tech stack.
 
 ---
 
@@ -155,7 +155,7 @@ All endpoints are prefixed with `/api`.
 
 - Node.js 18+
 - PostgreSQL 14+
-- npm or yarn
+- npm 
 
 ### 1. Clone the Repository
 
@@ -163,6 +163,24 @@ All endpoints are prefixed with `/api`.
 git clone https://github.com/your-username/Book_Stack.git
 cd Book_Stack
 ```
+### EITHER At the root 
+ ```npm install
+
+###backend deps
+```npm install --prefix server
+
+3.frontend deps
+npm install --prefix client
+
+4. Copy-Item server/.env.example server/.env
+
+Then edit .env and set:
+DB_PASSWORD — your PostgreSQL password
+JWT_SECRET — any random string (e.g. mysecretkey123)
+    #Fill in at minimum:
+        DB_PASSWORD (your local Postgres password)
+        JWT_SECRET (any long random string)
+
 
 ### 2. Set Up the Database
 
@@ -170,10 +188,15 @@ cd Book_Stack
 -- Connect to PostgreSQL
 psql -U postgres
 
+5.Create the PostgreSQL database:
+psql -U postgres -c "CREATE DATABASE devqa;"
+
 -- Create the development and test databases
-CREATE DATABASE devqa;
+CREATE DATABASE devqac;
 CREATE DATABASE seedtest;
+npm run seed --prefix server
 ```
+  -OR- INDIVIDUALLY 
 
 ### 3. Configure & Start the Backend
 
@@ -191,6 +214,8 @@ cd ../client
 npm install
 npm run dev
 ```
+
+Finally : RUN it : npm run start:dev
 
 The app will be available at **http://localhost:5173**.
 
