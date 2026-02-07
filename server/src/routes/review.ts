@@ -18,7 +18,7 @@ router.post(
         return res.status(400).json({ message: "Invalid book id" });
       }
 
-      if (!body || typeof body !== "string") {
+      if (!body || typeof body !== "string" || body.trim().length === 0) {
         return res.status(400).json({ message: "Body is required" });
       }
 
@@ -51,7 +51,7 @@ router.put("/reviews/:id", authenticate, async (req: Request, res: Response) => 
       return res.status(400).json({ message: "Invalid review id" });
     }
 
-    if (!body || typeof body !== "string") {
+    if (!body || typeof body !== "string" || body.trim().length === 0) {
       return res.status(400).json({ message: "Body is required" });
     }
 

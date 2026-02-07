@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ReviewCard from '../components/ReviewCard';
 import ReviewForm from '../components/ReviewForm';
@@ -9,9 +9,17 @@ import type { Book } from '../types';
 const BookDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Edit state
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editAuthor, setEditAuthor] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editError, setEditError] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -31,6 +39,48 @@ const BookDetail = () => {
     }
   };
 
+  const handleEditStart = () => {
+    if (!book) return;
+    setEditTitle(book.title);
+    setEditAuthor(book.author);
+    setEditDescription(book.description);
+    setEditError('');
+    setEditing(true);
+  };
+
+  const handleEditCancel = () => {
+    setEditing(false);
+    setEditError('');
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!book) return;
+    try {
+      setEditError('');
+      await bookAPI.update(book.id, {
+        title: editTitle,
+        author: editAuthor,
+        description: editDescription,
+      });
+      setEditing(false);
+      await loadBook();
+    } catch (err: any) {
+      setEditError(err.response?.data?.message || 'Failed to update book');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!book) return;
+    if (!window.confirm('Are you sure you want to delete this book?')) return;
+    try {
+      await bookAPI.delete(book.id);
+      navigate('/');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to delete book');
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading book...</div>;
   }
@@ -45,28 +95,78 @@ const BookDetail = () => {
   }
 
   const reviews = book.reviews || [];
+  const isOwner = user?.id === book.userId;
 
   return (
     <div className="container">
       <Link to="/" className="back-link">← All Books</Link>
       
       <div className="question-detail">
-        <h1>{book.title}</h1>
-        
-        <div className="question-meta">
-          <span>
-            Added by <strong>{book.user?.username || 'Unknown'}</strong>
-          </span>
-          <span>{new Date(book.createdAt).toLocaleDateString()}</span>
-        </div>
-        
-        <div className="question-body">
-          <p>{book.description}</p>
-        </div>
+        {editing ? (
+          <form onSubmit={handleEditSubmit} className="edit-form">
+            <h2>Edit Book</h2>
+            {editError && <div className="error-message">{editError}</div>}
+            <div className="form-group">
+              <label htmlFor="editTitle">Title</label>
+              <input
+                id="editTitle"
+                type="text"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="editAuthor">Author</label>
+              <input
+                id="editAuthor"
+                type="text"
+                value={editAuthor}
+                onChange={(e) => setEditAuthor(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="editDescription">Description</label>
+              <textarea
+                id="editDescription"
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-actions">
+              <button type="submit" className="btn-primary">Save</button>
+              <button type="button" className="btn-secondary" onClick={handleEditCancel}>Cancel</button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <h1>{book.title}</h1>
+            
+            <div className="question-meta">
+              <span>
+                Added by <strong>{book.user?.username || 'Unknown'}</strong>
+              </span>
+              <span>{new Date(book.createdAt).toLocaleDateString()}</span>
+            </div>
+            
+            <div className="question-body">
+              <p>{book.description}</p>
+            </div>
 
-        <div className="question-body">
-          <strong>Author:</strong> {book.author}
-        </div>
+            <div className="question-body">
+              <strong>Author:</strong> {book.author}
+            </div>
+
+            {isOwner && (
+              <div className="owner-actions">
+                <button className="btn-secondary" onClick={handleEditStart}>Edit</button>
+                <button className="btn-danger" onClick={handleDelete}>Delete</button>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <div className="answers-section">
@@ -78,6 +178,8 @@ const BookDetail = () => {
               <ReviewCard 
                 key={review.id} 
                 review={review}
+                currentUserId={user?.id}
+                onReviewUpdated={loadBook}
               />
             ))}
           </div>

@@ -7,7 +7,6 @@ interface UserAttributes {
   id: number;
   username: string;
   email: string;
-  passwordHash: string;
   password?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -86,14 +85,6 @@ User.init(
     tableName: "users",
     underscored: true,
     hooks: {
-      beforeValidate: async (user: User) => {
-        if (!user.password) {
-          return;
-        }
-        const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
-        user.passwordHash = await bcrypt.hash(user.password, saltRounds);
-        (user as User & { _passwordHashed?: boolean })._passwordHashed = true;
-      },
       beforeCreate: async (user: User) => {
         const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10");
         const hashedPassword = await bcrypt.hash(user.password, saltRounds);
