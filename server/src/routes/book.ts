@@ -1,5 +1,7 @@
 import { Router, Request, Response } from "express";
 import Book from "../models/Book";
+import User from "../models/User";
+import Review from "../models/Review";
 import { authenticate } from "../middleware/auth";
 
 const router = Router();
@@ -9,6 +11,7 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const books = await Book.findAll({
       order: [["createdAt", "DESC"]],
+      include: [{ model: User, attributes: ['id', 'username'] }],
     });
     res.json(books);
   } catch (error) {
@@ -25,7 +28,12 @@ router.get("/:id", async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid book id" });
     }
 
-    const book = await Book.findByPk(bookId);
+    const book = await Book.findByPk(bookId, {
+      include: [
+        { model: User, attributes: ['id', 'username'] },
+        { model: Review, include: [{ model: User, attributes: ['id', 'username'] }] },
+      ],
+    });
     if (!book) {
       return res.status(404).json({ message: "Book not found" });
     }

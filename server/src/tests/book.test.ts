@@ -12,6 +12,14 @@ vi.mock('../models/Book', () => ({
   }
 }));
 
+vi.mock('../models/User', () => ({
+  default: {}
+}));
+
+vi.mock('../models/Review', () => ({
+  default: {}
+}));
+
 const mockedBook = Book as unknown as {
   findAll: ReturnType<typeof vi.fn>;
   findByPk: ReturnType<typeof vi.fn>;
@@ -40,6 +48,9 @@ describe('Book routes', () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(1);
     expect(response.body[0].title).toBe('Book One');
+    expect(mockedBook.findAll).toHaveBeenCalledWith(
+      expect.objectContaining({ include: expect.any(Array) })
+    );
   });
 
   it('returns 500 when listing books fails', async () => {
@@ -64,6 +75,10 @@ describe('Book routes', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.id).toBe(2);
+    expect(mockedBook.findByPk).toHaveBeenCalledWith(
+      2,
+      expect.objectContaining({ include: expect.any(Array) })
+    );
   });
 
   it('returns 500 when fetching a book fails', async () => {

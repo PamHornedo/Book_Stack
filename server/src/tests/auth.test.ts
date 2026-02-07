@@ -47,7 +47,7 @@ describe('Auth routes', () => {
     });
 
     expect(response.status).toBe(201);
-    expect(response.body.token).toBeUndefined();
+    expect(response.body.token).toBeTypeOf('string');
     expect(response.body.user).toMatchObject({
       id: 1,
       username: 'testuser',

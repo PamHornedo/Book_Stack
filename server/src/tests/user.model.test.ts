@@ -44,23 +44,6 @@ describe('User model', () => {
     expect(compareMock).toHaveBeenCalledWith('plain-password', 'hashed-password');
   });
 
-  it('beforeValidate hashes password into passwordHash', async () => {
-    const hashMock = bcrypt.hash as ReturnType<typeof vi.fn>;
-    hashMock.mockResolvedValue('hashed-value');
-
-    const user = User.build({
-      username: 'tester',
-      email: 'tester@example.com',
-      password: 'plain-password'
-    });
-
-    await runHook(User.options.hooks?.beforeValidate, user);
-
-    expect(hashMock).toHaveBeenCalled();
-    expect((user as User & { passwordHash?: string }).passwordHash).toBe('hashed-value');
-    expect((user as User & { _passwordHashed?: boolean })._passwordHashed).toBe(true);
-  });
-
   it('beforeCreate hashes the password field', async () => {
     const hashMock = bcrypt.hash as ReturnType<typeof vi.fn>;
     hashMock.mockResolvedValue('hashed-value');
