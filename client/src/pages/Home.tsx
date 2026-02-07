@@ -6,6 +6,16 @@ import { bookAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import type { Book } from '../types';
 
+// Empty placeholder card component
+const EmptyBookCard = () => (
+  <div className="glass-card rounded-2xl p-6 flex flex-col items-center justify-center gap-3 min-h-[180px] border-2 border-dashed border-slate-300/50">
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+      <MdAdd className="text-2xl" />
+    </div>
+    <p className="text-sm font-medium text-slate-500">Add Book</p>
+  </div>
+);
+
 const Home = () => {
   const { user } = useAuth();
   const [books, setBooks] = useState<Book[]>([]);
@@ -81,33 +91,16 @@ const Home = () => {
         </div>
       )}
 
-      {/* ── Book list / empty state ────────── */}
-      {books.length === 0 ? (
-        <div className="glass flex flex-col items-center gap-4 py-16 text-center">
-          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <MdLibraryBooks className="text-3xl" />
-          </span>
-          <h2 className="text-lg font-semibold text-slate-800">
-            No books yet
-          </h2>
-          <p className="text-sm text-slate-500">
-            Be the first to share a book with the community.
-          </p>
-          <Link
-            to="/add-book"
-            className="mt-2 inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-accent/25 transition hover:bg-accent/90"
-          >
-            <MdAdd className="text-lg" />
-            Add the first book
-          </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
-          {books.map(book => (
-            <BookCard key={book.id} book={book} />
-          ))}
-        </div>
-      )}
+      {/* ── Book grid (4x4 with placeholders) ────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {books.map(book => (
+          <BookCard key={book.id} book={book} />
+        ))}
+        {/* Fill remaining slots up to 16 total */}
+        {Array.from({ length: Math.max(0, 16 - books.length) }).map((_, idx) => (
+          <EmptyBookCard key={`empty-${idx}`} />
+        ))}
+      </div>
     </div>
   );
 };

@@ -11,9 +11,24 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const books = await Book.findAll({
       order: [["createdAt", "DESC"]],
-      include: [{ model: User, attributes: ['id', 'username'] }],
+      include: [
+        { model: User, as: 'user', attributes: ['id', 'username'] },
+        { model: Review, as: 'reviews', attributes: ['id'], separate: true },
+      ],
     });
-    res.json(books);
+    
+    // Transform to include _count for frontend compatibility
+    const booksWithCount = books.map(book => {
+      const bookData: any = book.toJSON();
+      return {
+        ...bookData,
+        _count: {
+          reviews: bookData.reviews?.length || 0
+        }
+      };
+    });
+    
+    res.json(booksWithCount);
   } catch (error) {
     console.error("Error fetching books:", error);
     res.status(500).json({ message: "Error fetching books" });
@@ -30,8 +45,8 @@ router.get("/:id", async (req: Request, res: Response) => {
 
     const book = await Book.findByPk(bookId, {
       include: [
-        { model: User, attributes: ['id', 'username'] },
-        { model: Review, include: [{ model: User, attributes: ['id', 'username'] }] },
+        { model: User, as: 'user', attributes: ['id', 'username'] },
+        { model: Review, as: 'reviews', include: [{ model: User, as: 'user', attributes: ['id', 'username'] }] },
       ],
     });
     if (!book) {

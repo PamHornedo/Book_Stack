@@ -1,5 +1,8 @@
 import { Router, Request, Response } from "express";
 import User from "../models/User";
+import Book from "../models/Book";
+import Review from "../models/Review";
+import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
@@ -14,6 +17,24 @@ router.get("/", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching users:", error);
     return res.status(500).json({ message: "Error fetching users" });
+  }
+});
+
+// GET /api/users/stats - Get current user's stats (protected)
+router.get("/stats", authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    
+    const booksCount = await Book.count({ where: { userId } });
+    const reviewsCount = await Review.count({ where: { userId } });
+    
+    return res.json({
+      books: booksCount,
+      reviews: reviewsCount,
+    });
+  } catch (error) {
+    console.error("Error fetching user stats:", error);
+    return res.status(500).json({ message: "Error fetching user stats" });
   }
 });
 

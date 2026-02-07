@@ -28,6 +28,11 @@ export interface Review {
   createdAt: string;
   updatedAt: string;
   user?: User;
+  book?: {
+    id: number;
+    title: string;
+    author: string;
+  };
 }
 
 export interface AuthResponse {
