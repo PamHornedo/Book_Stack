@@ -1,18 +1,38 @@
 # Book Stack
 
-A full-stack book & review platform where readers can ask questions about books and provide reviews. Built as a capstone project demonstrating a complete client-server architecture with a modern tech stack.
+A full-stack book management and review platform built as a capstone project demonstrating a complete client-server architecture with a modern tech stack.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+  - [Option A: Setup from the Root](#option-a-setup-from-the-root)
+  - [Option B: Setup from Each Directory](#option-b-setup-from-each-directory)
+- [Environment Variables](#environment-variables)
+- [API Endpoints](#api-endpoints)
+- [Running Tests](#running-tests)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
 ---
 
 ## Features
 
-| Status | Feature                                        |
-| :----: | ---------------------------------------------- |
-|   ✅   | User authentication (register/login with JWT)  |
-|   ✅   | Create, read, update, delete books             |
-|   ✅   | Pagination for book listings                   |
-|   ✅   | Protected routes and ownership validation      |
-|   🚧   | Create, read, update, delete reviews           |
+| Status | Feature                                       |
+|:------:|-----------------------------------------------|
+| Done   | User authentication (register/login with JWT) |
+| Done   | Create, read, update, delete books            |
+| Done   | Pagination for book listings                  |
+| Done   | Protected routes and ownership validation     |
+| Done   | Create, read, update, delete reviews          |
+| Done   | Star ratings on reviews                       |
+| Done   | Glassmorphism UI with Tailwind CSS            |
 
 ---
 
@@ -21,7 +41,7 @@ A full-stack book & review platform where readers can ask questions about books 
 ### Backend
 
 | Technology   | Version | Purpose                     |
-| ------------ | ------- | --------------------------- |
+|--------------|---------|-----------------------------|
 | Node.js      | 18+     | Runtime environment         |
 | Express.js   | 4.22.1  | Web framework               |
 | TypeScript   | 5.9.3   | Type-safe JavaScript        |
@@ -34,15 +54,14 @@ A full-stack book & review platform where readers can ask questions about books 
 
 ### Frontend
 
-| Technology       | Version | Purpose                    |
-| ---------------- | ------- | -------------------------- |
-| React            | 18.3.1  | UI library                 |
-| Vite             | 5.4.21  | Build tool and dev server  |
-| TypeScript       | 5.9.3   | Type-safe JavaScript       |
-| React Router DOM | 6.30.3  | Client-side routing        |
-| Axios            | 1.13.4  | HTTP client                |
-| Tailwind CSS     | 3.4.19  | Utility-first CSS          |
-| shadcn/ui        | —       | UI component library       |
+| Technology       | Version | Purpose                   |
+|------------------|---------|---------------------------|
+| React            | 18.3.1  | UI library                |
+| Vite             | 5.4.21  | Build tool and dev server |
+| TypeScript       | 5.9.3   | Type-safe JavaScript      |
+| React Router DOM | 6.30.3  | Client-side routing       |
+| Axios            | 1.13.4  | HTTP client               |
+| Tailwind CSS     | 3.4.19  | Utility-first CSS         |
 
 ---
 
@@ -52,21 +71,21 @@ A full-stack book & review platform where readers can ask questions about books 
 Book_Stack/
 ├── README.md
 │
-├── client/                        # Frontend — React + Vite
+├── client/                        # Frontend - React + Vite
 │   ├── src/
 │   │   ├── components/            # Reusable UI components
-│   │   │   ├── AnswerCard.tsx
-│   │   │   ├── AnswerForm.tsx
+│   │   │   ├── BookCard.tsx
 │   │   │   ├── Navbar.tsx
 │   │   │   ├── ProtectedRoute.tsx
-│   │   │   └── QuestionCard.tsx
+│   │   │   ├── ReviewCard.tsx
+│   │   │   └── ReviewForm.tsx
 │   │   ├── context/               # React Context providers
 │   │   │   └── AuthContext.tsx
 │   │   ├── pages/                 # Page components
-│   │   │   ├── AskQuestion.tsx
+│   │   │   ├── AddBook.tsx
+│   │   │   ├── BookDetail.tsx
 │   │   │   ├── Home.tsx
 │   │   │   ├── Login.tsx
-│   │   │   ├── QuestionDetail.tsx
 │   │   │   └── Register.tsx
 │   │   ├── services/              # API service layer
 │   │   │   └── api.ts
@@ -81,24 +100,27 @@ Book_Stack/
 │   ├── tsconfig.node.json
 │   └── vite.config.ts
 │
-├── server/                        # Backend — Express + Sequelize
+├── server/                        # Backend - Express + Sequelize
 │   ├── src/
 │   │   ├── config/
 │   │   │   └── database.ts
 │   │   ├── middleware/
 │   │   │   └── auth.ts            # JWT authentication
 │   │   ├── models/
-│   │   │   ├── Index.ts           # Model exports & associations
+│   │   │   ├── Index.ts           # Model exports and associations
 │   │   │   ├── Book.ts
 │   │   │   ├── Review.ts
 │   │   │   └── User.ts
 │   │   ├── routes/
-│   │   │   ├── auth.ts        # /api/auth/*
-│   │   │   ├── book.ts        # /api/books/*
-│   │   │   ├── review.ts      # /api/books/:id/review, /api/review/*
-│   │   │   └── users.ts       # /api/users/*
+│   │   │   ├── auth.ts            # /api/auth/*
+│   │   │   ├── book.ts            # /api/books/*
+│   │   │   ├── review.ts         # /api/books/:id/reviews, /api/reviews/*
+│   │   │   └── users.ts          # /api/users/*
 │   │   ├── tests/
 │   │   │   ├── auth.test.ts
+│   │   │   ├── book.test.ts
+│   │   │   ├── review.test.ts
+│   │   │   ├── user.test.ts
 │   │   │   └── setup.ts
 │   │   ├── app.ts
 │   │   ├── index.ts
@@ -113,120 +135,205 @@ Book_Stack/
 
 ---
 
+## Prerequisites
+
+- Node.js 18 or higher
+- npm 9 or higher
+- PostgreSQL 14 or higher
+
+---
+
+## Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/PamHornedo/Book_Stack.git
+cd Book_Stack
+```
+
+### 2. Create the Database
+
+```bash
+psql -U postgres -c "CREATE DATABASE bookstack_db;"
+```
+
+Choose one of the two setup options below.
+
+---
+
+### Option A: Setup from the Root
+
+All commands are run from the project root (`Book_Stack/`).
+
+**Step 1 -- Install dependencies:**
+
+```bash
+npm install --prefix server
+```
+
+```bash
+npm install --prefix client
+```
+
+**Step 2 -- Configure environment variables:**
+
+```bash
+Copy-Item server/.env.EXAMPLE server/.env
+```
+
+Open `server/.env` and fill in your values. See [Environment Variables](#environment-variables).
+
+**Step 3 -- Seed the database:**
+
+```bash
+npm run seed --prefix server
+```
+
+**Step 4 -- Start the server:**
+
+```bash
+npm run dev --prefix server
+```
+
+**Step 5 -- Start the client (in a second terminal):**
+
+```bash
+npm run dev --prefix client
+```
+
+**Or start both at once:**
+
+```bash
+npm run start:dev
+```
+
+---
+
+### Option B: Setup from Each Directory
+
+**Step 1 -- Install and start the server:**
+
+```bash
+cd server
+npm install
+cp .env.EXAMPLE .env
+```
+
+Open `server/.env` and fill in your values. See [Environment Variables](#environment-variables).
+
+```bash
+npm run seed
+npm run dev
+```
+
+**Step 2 -- Install and start the client (in a second terminal):**
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+---
+
+### Verify
+
+Once both processes are running:
+
+| Service | URL                    |
+|---------|------------------------|
+| Server  | http://localhost:3001   |
+| Client  | http://localhost:3000   |
+
+---
+
+## Environment Variables
+
+Create a `server/.env` file with the following values:
+
+```
+DB_NAME=bookstack_db
+DB_USER=your_postgres_username
+DB_PASSWORD=your_postgres_password
+DB_HOST=localhost
+DB_PORT=5432
+JWT_SECRET=your_secret_key
+```
+
+| Variable      | Description                              |
+|---------------|------------------------------------------|
+| `DB_NAME`     | PostgreSQL database name                 |
+| `DB_USER`     | PostgreSQL username                      |
+| `DB_PASSWORD` | PostgreSQL password                      |
+| `DB_HOST`     | Database host (default: localhost)        |
+| `DB_PORT`     | Database port (default: 5432)            |
+| `JWT_SECRET`  | Secret key for signing JWT tokens        |
+
+---
+
 ## API Endpoints
 
 All endpoints are prefixed with `/api`.
 
 ### Authentication
 
-| Method | Endpoint         | Description         |
-| :----- | :--------------- | :------------------ |
-| `POST` | `/auth/register` | Register a new user |
-| `POST` | `/auth/login`    | Log in a user       |
-| `GET`  | `/auth/profile`  | Get current user    |
+| Method | Endpoint         | Description         | Auth Required |
+|--------|------------------|---------------------|:-------------:|
+| POST   | `/auth/register` | Register a new user | No            |
+| POST   | `/auth/login`    | Log in a user       | No            |
+| GET    | `/auth/profile`  | Get current user    | Yes           |
 
 ### Books
 
-| Method   | Endpoint     | Description   |
-| :------- | :----------- | :------------ |
-| `GET`    | `/books`     | Get all books |
-| `GET`    | `/books/:id` | Get a book    |
+| Method | Endpoint      | Description                    | Auth Required |
+|--------|---------------|--------------------------------|:-------------:|
+| GET    | `/books`      | List all books                 | No            |
+| GET    | `/books/:id`  | Get a single book with reviews | No            |
+| POST   | `/books`      | Create a book                  | Yes           |
+| PUT    | `/books/:id`  | Update a book (owner only)     | Yes           |
+| DELETE | `/books/:id`  | Delete a book (owner only)     | Yes           |
 
 ### Reviews
 
-| Method   | Endpoint                    | Description     |
-| :------- | :-------------------------- | :-------------- |
-| `POST`   | `/books/:questionId/review` | Create a review |
-| `PUT`    | `/review/:id`               | Update a review |
-| `DELETE` | `/review/:id`               | Delete a review |
+| Method | Endpoint                 | Description                  | Auth Required |
+|--------|--------------------------|------------------------------|:-------------:|
+| POST   | `/books/:id/reviews`     | Add a review                 | Yes           |
+| PUT    | `/reviews/:id`           | Update a review (owner only) | Yes           |
+| DELETE | `/reviews/:id`           | Delete a review (owner only) | Yes           |
 
 ### Users
 
-| Method | Endpoint     | Description        |
-| :----- | :----------- | :----------------- |
-| `GET`  | `/users`     | Get all users      |
-| `GET`  | `/users/:id` | Get a user by ID   |
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- PostgreSQL 14+
-- npm 
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/your-username/Book_Stack.git
-cd Book_Stack
-```
-### EITHER At the root 
- ```npm install
-
-###backend deps
-```npm install --prefix server
-
-3.frontend deps
-npm install --prefix client
-
-4. Copy-Item server/.env.example server/.env
-
-Then edit .env and set:
-DB_PASSWORD — your PostgreSQL password
-JWT_SECRET — any random string (e.g. mysecretkey123)
-    #Fill in at minimum:
-        DB_PASSWORD (your local Postgres password)
-        JWT_SECRET (any long random string)
-
-
-### 2. Set Up the Database
-
-```sql
--- Connect to PostgreSQL
-psql -U postgres
-
-5.Create the PostgreSQL database:
-psql -U postgres -c "CREATE DATABASE devqa;"
-
--- Create the development and test databases
-CREATE DATABASE devqac;
-CREATE DATABASE seedtest;
-npm run seed --prefix server
-```
-  -OR- INDIVIDUALLY 
-
-### 3. Configure & Start the Backend
-
-```bash
-cd server
-npm install
-cp .env.example .env    # then update with your PostgreSQL credentials and JWT secret
-npm run dev
-```
-
-### 4. Configure & Start the Frontend
-
-```bash
-cd ../client
-npm install
-npm run dev
-```
-
-Finally : RUN it : npm run start:dev
-
-The app will be available at **http://localhost:5173**.
+| Method | Endpoint      | Description      | Auth Required |
+|--------|---------------|------------------|:-------------:|
+| GET    | `/users`      | Get all users    | No            |
+| GET    | `/users/:id`  | Get a user by ID | No            |
 
 ---
 
 ## Running Tests
 
-Tests use **Vitest + Supertest** and mock the Sequelize models — no live database required.
+Tests use Vitest and Supertest with mocked Sequelize models. No live database is required.
+
+**From the root:**
+
+```bash
+npm test --prefix server
+```
+
+```bash
+npm test --prefix client
+```
+
+**From each directory:**
 
 ```bash
 cd server
+npm test
+```
+
+```bash
+cd client
 npm test
 ```
 
@@ -234,11 +341,28 @@ npm test
 
 ## Contributing
 
-Contributions are welcome. Fork the repository, create a feature branch, and open a pull request.
+1. Fork the repository.
+2. Create a feature branch:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -m "feat: describe your change"
+   ```
+4. Push to your branch:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+5. Open a Pull Request against `main`.
+
+---
 
 ## License
 
 Capstone project for a coding bootcamp. Not licensed for distribution or commercial use.
+
+---
 
 ## Acknowledgments
 
