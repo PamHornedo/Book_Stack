@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { MdSearch, MdLibraryBooks, MdAdd } from 'react-icons/md';
 import BookCard from '../components/BookCard';
 import { bookAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import type { Book } from '../types';
 
 const Home = () => {
+  const { user } = useAuth();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -37,26 +39,39 @@ const Home = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* ── Page header ────────────────────── */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Recent Books
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Browse the latest additions from the community
-        </p>
+    <div className="space-y-5">
+      {/* ── Page header ───────────────────── */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            Recent Books
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Browse the latest additions from the community
+          </p>
+        </div>
+        {user && (
+          <Link
+            to="/add-book"
+            className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-accent/25 transition hover:bg-accent/90 flex-shrink-0"
+          >
+            <MdAdd className="text-lg" />
+            Add Review
+          </Link>
+        )}
       </div>
 
-      {/* ── Decorative search bar ──────────── */}
-      <div className="relative">
-        <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-slate-400" />
-        <input
-          type="text"
-          placeholder="Search books…"
-          className="glass-input pl-11"
-          readOnly
-        />
+      {/* ── Search bar ───────────────────── */}
+      <div className="glass-search rounded-xl px-4 py-3">
+        <div className="relative">
+          <MdSearch className="absolute left-0 top-1/2 -translate-y-1/2 text-lg text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search books…"
+            className="w-full pl-8 pr-4 bg-transparent border-0 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-0"
+            readOnly
+          />
+        </div>
       </div>
 
       {/* ── Error banner ───────────────────── */}
@@ -87,7 +102,7 @@ const Home = () => {
           </Link>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
           {books.map(book => (
             <BookCard key={book.id} book={book} />
           ))}
