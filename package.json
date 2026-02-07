@@ -11,7 +11,7 @@
     "client": "cd client && npm run dev",
     "client:dev": "cd client && npm run dev",
     "client:build": "cd client && npm run build",
-    "install": "cd server && npm i && cd ../client && npm i",
+    "startup": "cd server && npm i && cd ../client && npm i",
     "build": "cd client && npm run build"
   },
   "keywords": [],
