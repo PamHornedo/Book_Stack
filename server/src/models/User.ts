@@ -78,7 +78,7 @@ User.init(
     sequelize,
     modelName: "User",
     tableName: "users",
-
+    underscored: true,
     hooks: {
       beforeCreate: async (user: User) => {
         const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10");

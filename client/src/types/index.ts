@@ -6,39 +6,29 @@ export interface User {
   createdAt: string;
 }
 
-export interface Question {
+export interface Book {
   id: number;
   title: string;
-  body: string;
+  author: string;
+  description: string;
   userId: number;
   createdAt: string;
   updatedAt: string;
   user?: User;
-  answers?: Answer[];
+  reviews?: Review[];
   _count?: {
-    answers: number;
+    reviews: number;
   };
 }
 
-export interface Answer {
+export interface Review {
   id: number;
   body: string;
-  questionId: number;
+  bookId: number;
   userId: number;
   createdAt: string;
   updatedAt: string;
   user?: User;
-  votes?: Vote[];
-  voteCount?: number;
-  userVote?: 1 | -1 | null;
-}
-
-export interface Vote {
-  id: number;
-  value: number;
-  answerId: number;
-  userId: number;
-  createdAt: string;
 }
 
 export interface AuthResponse {
@@ -57,11 +47,12 @@ export interface RegisterCredentials {
   password: string;
 }
 
-export interface CreateQuestionData {
+export interface CreateBookData {
   title: string;
-  body: string;
+  author: string;
+  description: string;
 }
 
-export interface CreateAnswerData {
+export interface CreateReviewData {
   body: string;
 }

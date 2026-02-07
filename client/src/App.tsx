@@ -5,8 +5,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import AskQuestion from './pages/AskQuestion';
-import QuestionDetail from './pages/QuestionDetail';
+import AddBook from './pages/AddBook';
+import BookDetail from './pages/BookDetail';
 
 function App() {
   return (
@@ -20,14 +20,14 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route 
-                path="/ask" 
+                path="/add-book" 
                 element={
                   <ProtectedRoute>
-                    <AskQuestion />
+                    <AddBook />
                   </ProtectedRoute>
                 } 
               />
-              <Route path="/questions/:id" element={<QuestionDetail />} />
+              <Route path="/books/:id" element={<BookDetail />} />
             </Routes>
           </main>
         </div>
