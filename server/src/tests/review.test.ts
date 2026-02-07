@@ -7,6 +7,7 @@ import Book from '../models/Book';
 
 vi.mock('../models/Review', () => ({
   default: {
+    findAll: vi.fn(),
     create: vi.fn(),
     findByPk: vi.fn()
   }
@@ -18,7 +19,14 @@ vi.mock('../models/Book', () => ({
   }
 }));
 
+vi.mock('../models/User', () => ({
+  default: {}
+}));
+
+vi.mock('../models/Index', () => ({}));
+
 const mockedReview = Review as unknown as {
+  findAll: ReturnType<typeof vi.fn>;
   create: ReturnType<typeof vi.fn>;
   findByPk: ReturnType<typeof vi.fn>;
 };
@@ -37,6 +45,27 @@ const buildToken = (userId = 1) =>
 describe('Review routes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it('returns all reviews', async () => {
+    mockedReview.findAll.mockResolvedValue([
+      { id: 1, body: 'Great!', bookId: 1, userId: 1, createdAt: '2024-01-01' }
+    ]);
+
+    const response = await request(app).get('/api/reviews');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0].body).toBe('Great!');
+  });
+
+  it('returns 500 when listing reviews fails', async () => {
+    mockedReview.findAll.mockRejectedValue(new Error('DB error'));
+
+    const response = await request(app).get('/api/reviews');
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Error fetching reviews' });
   });
 
   it('requires auth to create a review', async () => {
