@@ -14,7 +14,10 @@ interface UserAttributes {
 }
 
 // Define optional attributes for creation (id, timestamps are auto-generated)
-interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
+interface UserCreationAttributes extends Optional<
+  UserAttributes,
+  "id" | "passwordHash"
+> {}
 
 process.env.BCRYPT_SALT_ROUNDS || "10";
 
@@ -26,12 +29,14 @@ class User
   public id!: number;
   public username!: string;
   public email!: string;
-  public password!: string;
+  public passwordHash!: string;
+  public password?: string;
+
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
   public async comparePassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.password);
+    return bcrypt.compare(password, this.passwordHash);
   }
 }
 
@@ -69,14 +74,17 @@ User.init(
         isEmail: { msg: "Must be a valid email address" },
       },
     },
-    password: {
+    passwordHash: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      field: 'password_hash',
+      field: "password_hash",
       validate: {
         notNull: { msg: "Password is required" },
         notEmpty: { msg: "Password cannot be empty" },
-        len: { args: [8], msg: "Password must be at least 8 characters" },
+        len: {
+          args: [8, 12],
+          msg: "Password must be between 8 to 12 characters",
+        },
       },
     },
   },
@@ -85,27 +93,24 @@ User.init(
     modelName: "User",
     tableName: "users",
     hooks: {
-      beforeValidate: async (user: User) => {
-        if (!user.password) {
-          return;
-        }
-        const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
-        user.passwordHash = await bcrypt.hash(user.password, saltRounds);
-        (user as User & { _passwordHashed?: boolean })._passwordHashed = true;
-      },
       beforeCreate: async (user: User) => {
-        const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10");
-        const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-        user.password = hashedPassword;
-        console.log("Password hashed in beforeCreate");
+        if (user.password) {
+          const saltRounds = parseInt(
+            process.env.BCRYPT_SALT_ROUNDS || "10",
+            10,
+          );
+          user.passwordHash = await bcrypt.hash(user.password, saltRounds);
+          console.log("Password hashed in beforeCreate");
+        }
       },
 
-      // TODO: Add beforeUpdate hook to hash password if changed
-      // Hint: Use user.changed('password') to check if password was modified
       beforeUpdate: async (user: User) => {
         if (user.changed("password")) {
-          const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10");
-          user.password = await bcrypt.hash(user.password, saltRounds);
+          const saltRounds = parseInt(
+            process.env.BCRYPT_SALT_ROUNDS || "10",
+            10,
+          );
+          user.passwordHash = await bcrypt.hash(user.password!, saltRounds);
           console.log("Password hashed in beforeUpdate");
         }
       },
