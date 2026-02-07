@@ -2,7 +2,6 @@ import { DataTypes, Model, Optional } from "sequelize";
 import bcrypt from "bcrypt";
 import sequelize from "../config/database";
 
-// Define the User attributes interface
 interface UserAttributes {
   id: number;
   username: string;
@@ -12,12 +11,10 @@ interface UserAttributes {
   updatedAt?: Date;
 }
 
-// Define optional attributes for creation (id, timestamps are auto-generated)
 interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
 
 process.env.BCRYPT_SALT_ROUNDS || "10";
 
-// Create the User class extending Model
 class User
   extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes
@@ -34,7 +31,6 @@ class User
   }
 }
 
-// Initialize the User model
 User.init(
   {
     id: {
@@ -59,7 +55,7 @@ User.init(
       },
     },
     email: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING(100),
       allowNull: false,
       unique: true,
       validate: {
@@ -71,11 +67,10 @@ User.init(
     password: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      field: 'password_hash',
       validate: {
         notNull: { msg: "Password is required" },
         notEmpty: { msg: "Password cannot be empty" },
-        len: { args: [8], msg: "Password must be at least 8 characters" },
+        len: { args: [8, 100], msg: "Password must be at least 8 characters" },
       },
     },
   },
@@ -87,18 +82,14 @@ User.init(
     hooks: {
       beforeCreate: async (user: User) => {
         const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10");
-        const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-        user.password = hashedPassword;
+        user.password = await bcrypt.hash(user.password, saltRounds);
         console.log("Password hashed in beforeCreate");
       },
 
-      // TODO: Add beforeUpdate hook to hash password if changed
-      // Hint: Use user.changed('password') to check if password was modified
       beforeUpdate: async (user: User) => {
         if (user.changed("password")) {
           const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10");
           user.password = await bcrypt.hash(user.password, saltRounds);
-          console.log("Password hashed in beforeUpdate");
         }
       },
     },

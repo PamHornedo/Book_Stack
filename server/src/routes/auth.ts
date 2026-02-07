@@ -47,6 +47,7 @@ router.post("/register", async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
+    console.error(error);
     if (
       error?.name === "SequelizeValidationError" ||
       error?.name === "SequelizeUniqueConstraintError"
