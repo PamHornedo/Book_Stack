@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth';
-import questionRoutes from './routes/questions';
-import answerRoutes from './routes/answers';
-import voteRoutes from './routes/users';
+import bookRoutes from './routes/book';
+import reviewRoutes from './routes/review';
+import usersRoutes from './routes/users';
 
 export const createApp = () => {
   const app = express();
@@ -17,12 +17,12 @@ export const createApp = () => {
   app.use(express.json());
 
   app.use('/api/auth', authRoutes);
-  app.use('/api/questions', questionRoutes);
-  app.use('/api', answerRoutes);
-  app.use('/api', voteRoutes);
+  app.use('/api/books', bookRoutes);
+  app.use('/api', reviewRoutes);
+  app.use('/api/users', usersRoutes);
 
   app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', message: 'DevQ&A API is running!' });
+    res.json({ status: 'ok', message: 'Book Stack API is running!' });
   });
 
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
