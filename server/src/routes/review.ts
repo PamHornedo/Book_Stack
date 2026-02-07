@@ -1,9 +1,27 @@
 import { Router, Request, Response } from "express";
 import Review from "../models/Review";
 import Book from "../models/Book";
+import User from "../models/User";
 import { authenticate } from "../middleware/auth";
 
 const router = Router();
+
+// GET /api/reviews - Get all reviews
+router.get("/reviews", async (req: Request, res: Response) => {
+  try {
+    const reviews = await Review.findAll({
+      order: [["createdAt", "DESC"]],
+      include: [
+        { model: User, as: 'user', attributes: ['id', 'username'] },
+        { model: Book, as: 'book', attributes: ['id', 'title', 'author'] },
+      ],
+    });
+    res.json(reviews);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({ message: "Error fetching reviews" });
+  }
+});
 
 // POST /api/books/:bookId/reviews - Create review (protected)
 router.post(
