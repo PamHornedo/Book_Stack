@@ -42,6 +42,15 @@ describe('Book routes', () => {
     expect(response.body[0].title).toBe('Book One');
   });
 
+  it('returns 500 when listing books fails', async () => {
+    mockedBook.findAll.mockRejectedValue(new Error('DB error'));
+
+    const response = await request(app).get('/api/books');
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Error fetching books' });
+  });
+
   it('returns a single book by id', async () => {
     mockedBook.findByPk.mockResolvedValue({
       id: 2,
@@ -55,6 +64,15 @@ describe('Book routes', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.id).toBe(2);
+  });
+
+  it('returns 500 when fetching a book fails', async () => {
+    mockedBook.findByPk.mockRejectedValue(new Error('DB error'));
+
+    const response = await request(app).get('/api/books/2');
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Error fetching book' });
   });
 
   it('rejects invalid book id on fetch', async () => {
@@ -112,6 +130,42 @@ describe('Book routes', () => {
     });
   });
 
+  it('returns 500 when creating a book fails', async () => {
+    mockedBook.create.mockRejectedValue(new Error('DB error'));
+
+    const response = await request(app)
+      .post('/api/books')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({
+        title: 'New Book',
+        author: 'New Author',
+        description: 'New Desc'
+      });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Error creating book' });
+  });
+
+  it('rejects missing fields when creating a book', async () => {
+    const response = await request(app)
+      .post('/api/books')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ title: 'Only Title' });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'All fields are required' });
+  });
+
+  it('rejects empty fields when creating a book', async () => {
+    const response = await request(app)
+      .post('/api/books')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ title: '  ', author: 'Author', description: 'Desc' });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'All fields are required' });
+  });
+
   it('requires auth to update a book', async () => {
     const response = await request(app).put('/api/books/1').send({
       title: 'Updated',
@@ -121,6 +175,40 @@ describe('Book routes', () => {
 
     expect(response.status).toBe(401);
     expect(response.body).toEqual({ message: 'No token provided' });
+  });
+
+  it('rejects invalid book id on update', async () => {
+    const response = await request(app)
+      .put('/api/books/not-a-number')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ title: 'Updated', author: 'Updated', description: 'Updated' });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'Invalid book id' });
+  });
+
+  it('returns 404 when updating a missing book', async () => {
+    mockedBook.findByPk.mockResolvedValue(null);
+
+    const response = await request(app)
+      .put('/api/books/999')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ title: 'Updated', author: 'Updated', description: 'Updated' });
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ message: 'Book not found' });
+  });
+
+  it('returns 500 when updating a book fails', async () => {
+    mockedBook.findByPk.mockRejectedValue(new Error('DB error'));
+
+    const response = await request(app)
+      .put('/api/books/1')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ title: 'Updated', author: 'Updated', description: 'Updated' });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Error updating book' });
   });
 
   it('forbids updates from non-owners', async () => {
@@ -166,11 +254,80 @@ describe('Book routes', () => {
     expect(updateMock).toHaveBeenCalled();
   });
 
+  it('rejects missing fields when updating a book', async () => {
+    mockedBook.findByPk.mockResolvedValue({
+      id: 1,
+      title: 'Old',
+      author: 'Old',
+      description: 'Old',
+      userId: 1,
+      update: vi.fn().mockResolvedValue({})
+    });
+
+    const response = await request(app)
+      .put('/api/books/1')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ title: 'Updated' });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'All fields are required' });
+  });
+
+  it('rejects empty fields when updating a book', async () => {
+    mockedBook.findByPk.mockResolvedValue({
+      id: 1,
+      title: 'Old',
+      author: 'Old',
+      description: 'Old',
+      userId: 1,
+      update: vi.fn().mockResolvedValue({})
+    });
+
+    const response = await request(app)
+      .put('/api/books/1')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ title: 'Updated', author: '  ', description: 'Updated' });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'All fields are required' });
+  });
+
   it('requires auth to delete a book', async () => {
     const response = await request(app).delete('/api/books/1');
 
     expect(response.status).toBe(401);
     expect(response.body).toEqual({ message: 'No token provided' });
+  });
+
+  it('rejects invalid book id on delete', async () => {
+    const response = await request(app)
+      .delete('/api/books/not-a-number')
+      .set('Authorization', `Bearer ${buildToken(1)}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'Invalid book id' });
+  });
+
+  it('returns 404 when deleting a missing book', async () => {
+    mockedBook.findByPk.mockResolvedValue(null);
+
+    const response = await request(app)
+      .delete('/api/books/999')
+      .set('Authorization', `Bearer ${buildToken(1)}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ message: 'Book not found' });
+  });
+
+  it('returns 500 when deleting a book fails', async () => {
+    mockedBook.findByPk.mockRejectedValue(new Error('DB error'));
+
+    const response = await request(app)
+      .delete('/api/books/1')
+      .set('Authorization', `Bearer ${buildToken(1)}`);
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Error deleting book' });
   });
 
   it('forbids deletes from non-owners', async () => {

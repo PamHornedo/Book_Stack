@@ -42,7 +42,17 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
   try {
     const { title, author, description } = req.body;
 
-    if (!title || !author || !description) {
+    if (
+      !title ||
+      !author ||
+      !description ||
+      typeof title !== "string" ||
+      typeof author !== "string" ||
+      typeof description !== "string" ||
+      title.trim().length === 0 ||
+      author.trim().length === 0 ||
+      description.trim().length === 0
+    ) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -78,6 +88,19 @@ router.put("/:id", authenticate, async (req: Request, res: Response) => {
     }
 
     const { title, author, description } = req.body;
+    if (
+      !title ||
+      !author ||
+      !description ||
+      typeof title !== "string" ||
+      typeof author !== "string" ||
+      typeof description !== "string" ||
+      title.trim().length === 0 ||
+      author.trim().length === 0 ||
+      description.trim().length === 0
+    ) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
     await book.update({ title, author, description });
     return res.json(book);
   } catch (error) {
