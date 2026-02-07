@@ -53,7 +53,7 @@ const startServer = async () => {
 
   // TODO: Sync database (creates tables if they don't exist)
   // WARNING: { force: true } will DROP all tables!
-  await sequelize.sync({ force: false, alter: true });
+  await sequelize.sync({ force: false });
   console.log("✅ Database synced");
 
   // TODO: Start Express server
