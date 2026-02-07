@@ -20,6 +20,8 @@ vi.mock('../models/Review', () => ({
   default: {}
 }));
 
+vi.mock('../models/Index', () => ({}));
+
 const mockedBook = Book as unknown as {
   findAll: ReturnType<typeof vi.fn>;
   findByPk: ReturnType<typeof vi.fn>;
@@ -40,7 +42,10 @@ describe('Book routes', () => {
 
   it('returns all books', async () => {
     mockedBook.findAll.mockResolvedValue([
-      { id: 1, title: 'Book One', author: 'Author', description: 'Desc', userId: 1 }
+      {
+        id: 1, title: 'Book One', author: 'Author', description: 'Desc', userId: 1,
+        toJSON() { return { id: 1, title: 'Book One', author: 'Author', description: 'Desc', userId: 1, reviews: [] }; }
+      }
     ]);
 
     const response = await request(app).get('/api/books');
@@ -48,6 +53,7 @@ describe('Book routes', () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(1);
     expect(response.body[0].title).toBe('Book One');
+    expect(response.body[0]._count).toEqual({ reviews: 0 });
     expect(mockedBook.findAll).toHaveBeenCalledWith(
       expect.objectContaining({ include: expect.any(Array) })
     );

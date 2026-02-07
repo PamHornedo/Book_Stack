@@ -12,6 +12,8 @@ vi.mock('../models/User', () => ({
   }
 }));
 
+vi.mock('../models/Index', () => ({}));
+
 const mockedUser = User as unknown as {
   findOne: ReturnType<typeof vi.fn>;
   create: ReturnType<typeof vi.fn>;

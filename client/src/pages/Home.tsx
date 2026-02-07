@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MdSearch, MdLibraryBooks, MdAdd } from 'react-icons/md';
+import { MdSearch, MdAdd } from 'react-icons/md';
 import BookCard from '../components/BookCard';
 import { bookAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
