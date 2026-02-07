@@ -24,24 +24,24 @@ const Layout = ({ children }: LayoutProps) => {
   const { pathname } = useLocation();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pt-24 pb-12 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+    <div className="pt-24 pb-16">
+      <div className="flex">
         {/* ── Sidebar ─────────────────────────────── */}
-        <aside className="lg:col-span-3">
-          <div className="glass-sidebar sticky top-24 space-y-8 p-5">
+        <aside className="w-64 flex-shrink-0 hidden lg:block fixed left-0 top-14 bottom-0 overflow-y-auto">
+          <div className="glass-strong h-full rounded-none rounded-r-2xl p-5 shadow-lg shadow-brand-600/5 space-y-8">
             {/* Navigation */}
             <div>
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">
-                Navigation
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-widest text-slate-500">
+                Explore
               </h3>
-              <nav className="flex flex-col gap-1">
+              <nav className="flex flex-col gap-1.5">
                 {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
                   const isActive = pathname === to;
                   return (
                     <Link
                       key={to}
                       to={to}
-                      className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition
+                      className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition
                         ${
                           isActive
                             ? 'bg-accent text-white shadow-md shadow-accent/30'
@@ -56,30 +56,49 @@ const Layout = ({ children }: LayoutProps) => {
               </nav>
             </div>
 
+            {/* Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-brand-200/60 to-transparent" />
+
             {/* Trending Tags */}
             <div>
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-widest text-slate-500">
                 Trending Tags
               </h3>
               <div className="flex flex-wrap gap-2">
                 {TRENDING_TAGS.map((tag) => (
-                  <span key={tag} className="accent-badge">
+                  <span key={tag} className="inline-flex items-center px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-semibold uppercase tracking-wide">
                     {tag}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Footer */}
-            <p className="text-xs leading-relaxed text-slate-400">
-              &copy; {new Date().getFullYear()} Read&amp;Review Dashboard. Built
-              for the community of readers.
-            </p>
+            {/* Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-brand-200/60 to-transparent" />
+
+            {/* Your Stats */}
+            <div>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-widest text-slate-500">
+                Your Stats
+              </h3>
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="flex flex-col items-center justify-center rounded-lg bg-white/40 p-3 text-center">
+                  <div className="text-2xl mb-1">📚</div>
+                  <div className="text-lg font-bold text-slate-800">3</div>
+                  <div className="text-xs text-slate-500">Books</div>
+                </div>
+                <div className="flex flex-col items-center justify-center rounded-lg bg-white/40 p-3 text-center">
+                  <div className="text-2xl mb-1">✍️</div>
+                  <div className="text-lg font-bold text-slate-800">0</div>
+                  <div className="text-xs text-slate-500">Reviews</div>
+                </div>
+              </div>
+            </div>
           </div>
         </aside>
 
         {/* ── Main Content ────────────────────────── */}
-        <main className="lg:col-span-9">{children}</main>
+        <main className="lg:ml-64 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">{children}</main>
       </div>
     </div>
   );

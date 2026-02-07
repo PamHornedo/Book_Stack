@@ -68,4 +68,13 @@ export const reviewAPI = {
     api.delete(`/reviews/${id}`)
 };
 
+// User endpoints
+export const userAPI = {
+  getAll: () =>
+    api.get<User[]>('/users'),
+
+  getById: (id: number) =>
+    api.get<User>(`/users/${id}`)
+};
+
 export default api;
