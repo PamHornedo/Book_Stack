@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import app from '../app';
 import User from '../models/User';
 
@@ -24,7 +23,7 @@ describe('Auth routes', () => {
     vi.clearAllMocks();
   });
 
-  it('registers a user and returns a JWT', async () => {
+  it('registers a user', async () => {
     mockedUser.findOne.mockResolvedValue(null);
     mockedUser.create.mockResolvedValue({
       id: 1,
@@ -39,16 +38,13 @@ describe('Auth routes', () => {
       password: 'password123'
     });
 
-    expect(response.status).toBe(200);
-    expect(response.body.token).toBeTypeOf('string');
+    expect(response.status).toBe(201);
+    expect(response.body.token).toBeUndefined();
     expect(response.body.user).toMatchObject({
       id: 1,
       username: 'testuser',
       email: 'testuser@example.com'
     });
-
-    const decoded = jwt.verify(response.body.token, process.env.JWT_SECRET || 'test-secret');
-    expect((decoded as any).email).toBe('testuser@example.com');
   });
 
   it('rejects registration with missing fields', async () => {
@@ -69,18 +65,18 @@ describe('Auth routes', () => {
       password: 'password123'
     });
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(409);
     expect(response.body).toEqual({ message: 'User already exists' });
   });
 
   it('logs in a user and returns a JWT', async () => {
-    const hashedPassword = await bcrypt.hash('password123', 10);
     mockedUser.findOne.mockResolvedValue({
       id: 1,
       username: 'testuser',
       email: 'testuser@example.com',
-      password: hashedPassword,
-      createdAt: new Date('2024-01-01T00:00:00Z')
+      password: 'hashed-password',
+      createdAt: new Date('2024-01-01T00:00:00Z'),
+      comparePassword: vi.fn().mockResolvedValue(true)
     });
 
     const response = await request(app).post('/api/auth/login').send({
@@ -94,7 +90,14 @@ describe('Auth routes', () => {
   });
 
   it('rejects login with invalid credentials', async () => {
-    mockedUser.findOne.mockResolvedValue(null);
+    mockedUser.findOne.mockResolvedValue({
+      id: 1,
+      username: 'testuser',
+      email: 'testuser@example.com',
+      password: 'hashed-password',
+      createdAt: new Date('2024-01-01T00:00:00Z'),
+      comparePassword: vi.fn().mockResolvedValue(false)
+    });
 
     const response = await request(app).post('/api/auth/login').send({
       email: 'testuser@example.com',

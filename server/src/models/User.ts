@@ -84,6 +84,7 @@ User.init(
     sequelize,
     modelName: "User",
     tableName: "users",
+    underscored: true,
     hooks: {
       beforeValidate: async (user: User) => {
         if (!user.password) {

@@ -3,10 +3,10 @@ import type {
   AuthResponse, 
   LoginCredentials, 
   RegisterCredentials,
-  Question,
-  CreateQuestionData,
-  Answer,
-  CreateAnswerData,
+  Book,
+  CreateBookData,
+  Review,
+  CreateReviewData,
   User
 } from '../types';
 
@@ -38,46 +38,34 @@ export const authAPI = {
     api.get<User>('/auth/profile')
 };
 
-// Question endpoints
-export const questionAPI = {
+// Book endpoints
+export const bookAPI = {
   getAll: () => 
-    api.get<Question[]>('/questions'),
+    api.get<Book[]>('/books'),
   
   getById: (id: number) => 
-    api.get<Question>(`/questions/${id}`),
+    api.get<Book>(`/books/${id}`),
   
-  create: (data: CreateQuestionData) => 
-    api.post<Question>('/questions', data),
+  create: (data: CreateBookData) => 
+    api.post<Book>('/books', data),
   
-  update: (id: number, data: Partial<CreateQuestionData>) => 
-    api.put<Question>(`/questions/${id}`, data),
-  
-  delete: (id: number) => 
-    api.delete(`/questions/${id}`)
-};
-
-// Answer endpoints
-export const answerAPI = {
-  create: (questionId: number, data: CreateAnswerData) => 
-    api.post<Answer>(`/questions/${questionId}/answers`, data),
-  
-  update: (id: number, data: Partial<CreateAnswerData>) => 
-    api.put<Answer>(`/answers/${id}`, data),
+  update: (id: number, data: Partial<CreateBookData>) => 
+    api.put<Book>(`/books/${id}`, data),
   
   delete: (id: number) => 
-    api.delete(`/answers/${id}`)
+    api.delete(`/books/${id}`)
 };
 
-// Vote endpoints
-export const voteAPI = {
-  upvote: (answerId: number) => 
-    api.post(`/answers/${answerId}/vote`, { value: 1 }),
+// Review endpoints
+export const reviewAPI = {
+  create: (bookId: number, data: CreateReviewData) => 
+    api.post<Review>(`/books/${bookId}/reviews`, data),
   
-  downvote: (answerId: number) => 
-    api.post(`/answers/${answerId}/vote`, { value: -1 }),
+  update: (id: number, data: Partial<CreateReviewData>) => 
+    api.put<Review>(`/reviews/${id}`, data),
   
-  removeVote: (answerId: number) => 
-    api.delete(`/answers/${answerId}/vote`)
+  delete: (id: number) => 
+    api.delete(`/reviews/${id}`)
 };
 
 export default api;

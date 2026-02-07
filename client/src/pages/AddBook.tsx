@@ -1,10 +1,11 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { questionAPI } from '../services/api';
+import { bookAPI } from '../services/api';
 
-const AskQuestion = () => {
+const AddBook = () => {
   const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
+  const [author, setAuthor] = useState('');
+  const [description, setDescription] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   
@@ -13,8 +14,8 @@ const AskQuestion = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    if (!title.trim() || !body.trim()) {
-      setError('Title and body are required');
+    if (!title.trim() || !author.trim() || !description.trim()) {
+      setError('Title, author, and description are required');
       return;
     }
 
@@ -22,11 +23,11 @@ const AskQuestion = () => {
       setSubmitting(true);
       setError('');
       
-      const response = await questionAPI.create({ title, body });
-      
-      navigate(`/questions/${response.data.id}`);
+      const response = await bookAPI.create({ title, author, description });
+
+      navigate(`/books/${response.data.id}`);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create question');
+      setError(err.response?.data?.message || 'Failed to create book');
     } finally {
       setSubmitting(false);
     }
@@ -35,7 +36,7 @@ const AskQuestion = () => {
   return (
     <div className="container">
       <div className="ask-question-page">
-        <h1>Ask a Question</h1>
+        <h1>Add a Book</h1>
         
         {error && <div className="error-message">{error}</div>}
         
@@ -47,25 +48,39 @@ const AskQuestion = () => {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="What's your programming question?"
+              placeholder="Enter the book title"
               required
               disabled={submitting}
             />
-            <small>Be specific and clear in your question title</small>
+            <small>Use the full title as listed by the publisher</small>
           </div>
-          
+
           <div className="form-group">
-            <label htmlFor="body">Details</label>
+            <label htmlFor="author">Author</label>
+            <input
+              type="text"
+              id="author"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="Who wrote this book?"
+              required
+              disabled={submitting}
+            />
+            <small>Include the primary author name</small>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="description">Description</label>
             <textarea
-              id="body"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Provide all the details about your question..."
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Summarize the book in a few sentences"
               rows={12}
               required
               disabled={submitting}
             />
-            <small>Include code samples, error messages, and what you've tried</small>
+            <small>Highlight the premise, themes, or audience</small>
           </div>
           
           <div className="form-actions">
@@ -78,7 +93,7 @@ const AskQuestion = () => {
               Cancel
             </button>
             <button type="submit" className="btn-primary" disabled={submitting}>
-              {submitting ? 'Posting...' : 'Post Question'}
+              {submitting ? 'Posting...' : 'Add Book'}
             </button>
           </div>
         </form>
@@ -87,4 +102,4 @@ const AskQuestion = () => {
   );
 };
 
-export default AskQuestion;
+export default AddBook;

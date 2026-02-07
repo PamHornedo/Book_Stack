@@ -16,7 +16,7 @@ const Navbar = () => {
           
           {user ? (
             <>
-              <Link to="/ask" className="navbar-link navbar-ask-btn">Ask Question</Link>
+              <Link to="/add-book" className="navbar-link navbar-ask-btn">Add Book</Link>
               <span className="navbar-user">
                 Welcome, {user.username}
               </span>

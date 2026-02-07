@@ -1,55 +1,105 @@
 import { Router, Request, Response } from "express";
-import Answer from "../models/Review";
-import Question from "../models/Book";
-import User from "../models/User";
+import Review from "../models/Review";
+import Book from "../models/Book";
 import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
-// TODO: POST /api/questions/:questionId/answers - Create answer (protected)
+// POST /api/books/:bookId/reviews - Create review (protected)
 router.post(
-  "/:questionId/answers",
+  "/books/:bookId/reviews",
   authenticate,
   async (req: Request, res: Response) => {
-    // TODO: Get questionId from params
-    // const { questionId } = req.params;
-    // TODO: Get body from req.body
-    // const { body } = req.body;
-    // TODO: Validate body is provided
-    // TODO: Check if question exists
-    // const question = await Question.findByPk(questionId);
-    // If not found, return 404 "Question not found"
-    // TODO: Create answer
-    // const answer = await Answer.create({
-    //   body,
-    //   questionId: Number(questionId),
-    //   userId: req.user!.id
-    // });
-    // TODO: Fetch created answer with user info
-    // Use findByPk with include
-    // TODO: Return created answer
+    try {
+      const bookId = Number(req.params.bookId);
+      const { body } = req.body;
+
+      if (Number.isNaN(bookId)) {
+        return res.status(400).json({ message: "Invalid book id" });
+      }
+
+      if (!body || typeof body !== "string") {
+        return res.status(400).json({ message: "Body is required" });
+      }
+
+      const book = await Book.findByPk(bookId);
+      if (!book) {
+        return res.status(404).json({ message: "Book not found" });
+      }
+
+      const review = await Review.create({
+        body,
+        bookId,
+        userId: req.user!.id,
+      });
+
+      return res.status(201).json(review);
+    } catch (error) {
+      console.error("Error creating review:", error);
+      return res.status(500).json({ message: "Error creating review" });
+    }
   },
 );
 
-// TODO: PUT /api/answers/:id - Update answer (protected, owner only)
-router.put("/:id", authenticate, async (req: Request, res: Response) => {
-  // TODO: Get id from params and body from req.body
-  // TODO: Find answer
-  // If not found, return 404
-  // TODO: Check ownership
-  // If not owner, return 403
-  // TODO: Update answer
-  // await answer.update({ body });
-  // TODO: Return updated answer
+// PUT /api/reviews/:id - Update review (protected, owner only)
+router.put("/reviews/:id", authenticate, async (req: Request, res: Response) => {
+  try {
+    const reviewId = Number(req.params.id);
+    const { body } = req.body;
+
+    if (Number.isNaN(reviewId)) {
+      return res.status(400).json({ message: "Invalid review id" });
+    }
+
+    if (!body || typeof body !== "string") {
+      return res.status(400).json({ message: "Body is required" });
+    }
+
+    const review = await Review.findByPk(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    if (review.userId !== req.user!.id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    await review.update({ body });
+    return res.json(review);
+  } catch (error) {
+    console.error("Error updating review:", error);
+    return res.status(500).json({ message: "Error updating review" });
+  }
 });
 
-// TODO: DELETE /api/answers/:id - Delete answer (protected, owner only)
-router.delete("/:id", authenticate, async (req: Request, res: Response) => {
-  // TODO: Find answer
-  // TODO: Check ownership
-  // TODO: Delete answer
-  // await answer.destroy();
-  // TODO: Return success message
-});
+// DELETE /api/reviews/:id - Delete review (protected, owner only)
+router.delete(
+  "/reviews/:id",
+  authenticate,
+  async (req: Request, res: Response) => {
+    try {
+      const reviewId = Number(req.params.id);
+
+      if (Number.isNaN(reviewId)) {
+        return res.status(400).json({ message: "Invalid review id" });
+      }
+
+      const review = await Review.findByPk(reviewId);
+      if (!review) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+
+      if (review.userId !== req.user!.id) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      await review.destroy();
+      return res.json({ message: "Review deleted" });
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      return res.status(500).json({ message: "Error deleting review" });
+    }
+  },
+);
 
 export default router;
