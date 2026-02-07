@@ -47,12 +47,14 @@ Book.init(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      field: "user_id",
     },
   },
   {
     sequelize,
     modelName: "book",
     tableName: "books",
+    underscored: true,
   },
 );
 
