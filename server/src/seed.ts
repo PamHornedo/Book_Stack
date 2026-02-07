@@ -35,6 +35,62 @@ async function seed() {
         "Indigenous thinking applied to contemporary global challenges.",
       userId: users[1].id,
     },
+    //new1
+    {
+      title: "Quicksilver",
+      author: "Callie Hart",
+      description:
+        "I don't even know how to describe this book.",
+      userId: users[1].id,
+    },
+    //new2
+    {
+      title: "Candide",
+      author: "Voltaire",
+      description:
+        "A satirical coming of age story.",
+      userId: users[1].id,
+    },
+    //new3
+    {
+      title: "Cat in the hat",
+      author: "Dr. Seuss",
+      description:
+        "A humanoid cat causes chaos in a childs home.",
+      userId: users[1].id,
+    },
+    //new4
+    {
+      title: "Spiderman Book",
+      author: "Joseph Etienne",
+      description:
+        "Peter Parker becomes spider man.",
+      userId: users[1].id,
+    },
+    //new5
+    {
+      title: "Harry Potter and the Prisoner of Azkaban",
+      author: "J.K. Rowling",
+      description:
+        "You are a wizard harry, and your godfather is a villain (maybe).",
+      userId: users[1].id,
+    },
+    //new6
+    {
+      title: "Anna Karenina",
+      author: "Leo Tolstoy",
+      description:
+        "It's a sad love story.",
+      userId: users[1].id,
+    },
+    //new7
+    {
+      title: "Wuthering Heights",
+      author: "Emily Bronte",
+      description:
+        "Yup, another sad love story",
+      userId: users[1].id,
+    },
   ]);
 
   await Review.bulkCreate([
