@@ -39,6 +39,26 @@
            rounded-2xl shadow-md shadow-black/5;
   }
 
+  /* Stronger glass for enhanced sidebar */
+  .glass-strong {
+    @apply bg-white/[0.72] backdrop-blur-[20px] border border-white/50
+           shadow-md shadow-black/5;
+  }
+
+  /* Card glass with hover effects */
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-[12px] border border-white/40
+           transition-all duration-200
+           hover:shadow-lg hover:shadow-brand-600/10 hover:-translate-y-0.5;
+  }
+
+  /* Search bar glass */
+  .glass-search {
+    @apply bg-white/45 backdrop-blur-[10px] border border-white/30
+           focus-within:border-white/50 focus-within:bg-white/55
+           transition-all duration-200;
+  }
+
   /* Blue accent badge (tags / stat pills) */
   .accent-badge {
     @apply inline-flex items-center px-3 py-1 rounded-full

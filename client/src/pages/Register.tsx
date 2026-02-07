@@ -44,9 +44,9 @@ const Register = () => {
             <MdMenuBook className="text-2xl" />
           </span>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Create an account
+            Register
           </h1>
-          <p className="text-sm text-slate-500">Join the community of readers</p>
+          <p className="text-sm text-slate-500">Join the community</p>
         </div>
 
         {error && (

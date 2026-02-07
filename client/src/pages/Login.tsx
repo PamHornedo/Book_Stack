@@ -38,9 +38,9 @@ const Login = () => {
             <MdMenuBook className="text-2xl" />
           </span>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Welcome back
+            Login
           </h1>
-          <p className="text-sm text-slate-500">Sign in to your account</p>
+          <p className="text-sm text-slate-500">Welcome back</p>
         </div>
 
         {error && (
@@ -80,6 +80,12 @@ const Login = () => {
               required
               disabled={loading}
             />
+          </div>
+
+          <div className="flex items-center justify-end">
+            <span className="cursor-pointer text-xs text-slate-400 hover:text-accent transition">
+              Forgot password?
+            </span>
           </div>
 
           <button

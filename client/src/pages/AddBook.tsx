@@ -36,7 +36,7 @@ const AddBook = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+      <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
         Add a Book
       </h1>
 
@@ -91,8 +91,8 @@ const AddBook = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Summarize the book in a few sentences"
-              rows={10}
-              className="glass-input min-h-[160px] resize-y"
+              rows={12}
+              className="glass-input min-h-[200px] resize-y"
               required
               disabled={submitting}
             />

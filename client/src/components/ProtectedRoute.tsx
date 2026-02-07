@@ -9,7 +9,11 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-sm font-medium text-slate-500 animate-pulse">Loading…</p>
+      </div>
+    );
   }
 
   if (!user) {
