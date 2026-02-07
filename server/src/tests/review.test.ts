@@ -48,6 +48,16 @@ describe('Review routes', () => {
     expect(response.body).toEqual({ message: 'No token provided' });
   });
 
+  it('rejects invalid book id on create', async () => {
+    const response = await request(app)
+      .post('/api/books/not-a-number/reviews')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ body: 'Great book.' });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'Invalid book id' });
+  });
+
   it('creates a review for a book', async () => {
     mockedBook.findByPk.mockResolvedValue({ id: 1 });
     mockedReview.create.mockResolvedValue({
@@ -71,6 +81,31 @@ describe('Review routes', () => {
     });
   });
 
+  it('returns 500 when creating a review fails', async () => {
+    mockedBook.findByPk.mockResolvedValue({ id: 1 });
+    mockedReview.create.mockRejectedValue(new Error('DB error'));
+
+    const response = await request(app)
+      .post('/api/books/1/reviews')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ body: 'Great book.' });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Error creating review' });
+  });
+
+  it('rejects empty review body on create', async () => {
+    mockedBook.findByPk.mockResolvedValue({ id: 1 });
+
+    const response = await request(app)
+      .post('/api/books/1/reviews')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ body: '   ' });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'Body is required' });
+  });
+
   it('returns 404 when book is missing', async () => {
     mockedBook.findByPk.mockResolvedValue(null);
 
@@ -90,6 +125,40 @@ describe('Review routes', () => {
 
     expect(response.status).toBe(401);
     expect(response.body).toEqual({ message: 'No token provided' });
+  });
+
+  it('rejects invalid review id on update', async () => {
+    const response = await request(app)
+      .put('/api/reviews/not-a-number')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ body: 'Updated.' });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'Invalid review id' });
+  });
+
+  it('returns 404 when updating a missing review', async () => {
+    mockedReview.findByPk.mockResolvedValue(null);
+
+    const response = await request(app)
+      .put('/api/reviews/999')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ body: 'Updated.' });
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ message: 'Review not found' });
+  });
+
+  it('returns 500 when updating a review fails', async () => {
+    mockedReview.findByPk.mockRejectedValue(new Error('DB error'));
+
+    const response = await request(app)
+      .put('/api/reviews/1')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ body: 'Updated.' });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Error updating review' });
   });
 
   it('forbids updates from non-owners', async () => {
@@ -127,11 +196,59 @@ describe('Review routes', () => {
     expect(updateMock).toHaveBeenCalledWith({ body: 'Updated.' });
   });
 
+  it('rejects empty review body on update', async () => {
+    mockedReview.findByPk.mockResolvedValue({
+      id: 1,
+      body: 'Old',
+      userId: 1,
+      update: vi.fn().mockResolvedValue({})
+    });
+
+    const response = await request(app)
+      .put('/api/reviews/1')
+      .set('Authorization', `Bearer ${buildToken(1)}`)
+      .send({ body: '  ' });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'Body is required' });
+  });
+
   it('requires auth to delete a review', async () => {
     const response = await request(app).delete('/api/reviews/1');
 
     expect(response.status).toBe(401);
     expect(response.body).toEqual({ message: 'No token provided' });
+  });
+
+  it('rejects invalid review id on delete', async () => {
+    const response = await request(app)
+      .delete('/api/reviews/not-a-number')
+      .set('Authorization', `Bearer ${buildToken(1)}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'Invalid review id' });
+  });
+
+  it('returns 404 when deleting a missing review', async () => {
+    mockedReview.findByPk.mockResolvedValue(null);
+
+    const response = await request(app)
+      .delete('/api/reviews/999')
+      .set('Authorization', `Bearer ${buildToken(1)}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ message: 'Review not found' });
+  });
+
+  it('returns 500 when deleting a review fails', async () => {
+    mockedReview.findByPk.mockRejectedValue(new Error('DB error'));
+
+    const response = await request(app)
+      .delete('/api/reviews/1')
+      .set('Authorization', `Bearer ${buildToken(1)}`);
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Error deleting review' });
   });
 
   it('forbids deletes from non-owners', async () => {
