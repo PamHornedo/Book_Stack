@@ -1,6 +1,6 @@
 # Book Stack
 
-A full-stack Q&A platform where developers can ask questions about books and provide reviews. Built as a capstone project demonstrating a complete client-server architecture with a modern tech stack.
+A full-stack book & review platform where reclearaders can ask questions about books and provide reviews. Built as a capstone project demonstrating a complete client-server architecture with a modern tech stack.
 
 ---
 

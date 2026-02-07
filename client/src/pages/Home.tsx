@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { MdSearch, MdLibraryBooks, MdAdd } from 'react-icons/md';
 import BookCard from '../components/BookCard';
 import { bookAPI } from '../services/api';
 import type { Book } from '../types';
@@ -25,31 +26,68 @@ const Home = () => {
     }
   };
 
+  /* ── Loading state ─────────────────────── */
   if (loading) {
-    return <div className="loading">Loading books...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-24 gap-4">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-accent/30 border-t-accent" />
+        <p className="text-sm text-slate-500">Loading books…</p>
+      </div>
+    );
   }
 
   return (
-    <div className="container">
-      <div className="page-header">
-        <h1>All Books</h1>
-        <Link to="/add-book" className="btn-primary">
-          Add Book
-        </Link>
+    <div className="space-y-6">
+      {/* ── Page header ────────────────────── */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          Recent Books
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Browse the latest additions from the community
+        </p>
       </div>
 
-      {error && <div className="error-message">{error}</div>}
+      {/* ── Decorative search bar ──────────── */}
+      <div className="relative">
+        <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-slate-400" />
+        <input
+          type="text"
+          placeholder="Search books…"
+          className="glass-input pl-11"
+          readOnly
+        />
+      </div>
 
+      {/* ── Error banner ───────────────────── */}
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 backdrop-blur">
+          {error}
+        </div>
+      )}
+
+      {/* ── Book list / empty state ────────── */}
       {books.length === 0 ? (
-        <div className="empty-state">
-          <h2>No books yet</h2>
-          <p>Be the first to add a book!</p>
-          <Link to="/add-book" className="btn-primary">
+        <div className="glass flex flex-col items-center gap-4 py-16 text-center">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <MdLibraryBooks className="text-3xl" />
+          </span>
+          <h2 className="text-lg font-semibold text-slate-800">
+            No books yet
+          </h2>
+          <p className="text-sm text-slate-500">
+            Be the first to share a book with the community.
+          </p>
+          <Link
+            to="/add-book"
+            className="mt-2 inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-accent/25 transition hover:bg-accent/90"
+          >
+            <MdAdd className="text-lg" />
             Add the first book
           </Link>
         </div>
       ) : (
-        <div className="questions-list">
+        <div className="space-y-4">
           {books.map(book => (
             <BookCard key={book.id} book={book} />
           ))}

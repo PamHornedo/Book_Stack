@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { MdArrowBack, MdEdit, MdDelete, MdRateReview } from 'react-icons/md';
 import { useAuth } from '../context/AuthContext';
 import ReviewCard from '../components/ReviewCard';
 import ReviewForm from '../components/ReviewForm';
@@ -81,15 +82,29 @@ const BookDetail = () => {
     }
   };
 
+  /* ── Loading ────────────────────────────── */
   if (loading) {
-    return <div className="loading">Loading book...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-24 gap-4">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-accent/30 border-t-accent" />
+        <p className="text-sm text-slate-500">Loading book…</p>
+      </div>
+    );
   }
 
+  /* ── Error / not found ──────────────────── */
   if (error || !book) {
     return (
-      <div className="container">
-        <div className="error-message">{error || 'Book not found'}</div>
-        <Link to="/" className="btn-secondary">← Back to books</Link>
+      <div className="space-y-4">
+        <div className="rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 backdrop-blur">
+          {error || 'Book not found'}
+        </div>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-accent no-underline transition hover:gap-2.5"
+        >
+          <MdArrowBack className="text-base" /> Back to books
+        </Link>
       </div>
     );
   }
@@ -98,85 +113,131 @@ const BookDetail = () => {
   const isOwner = user?.id === book.userId;
 
   return (
-    <div className="container">
-      <Link to="/" className="back-link">← All Books</Link>
-      
-      <div className="question-detail">
+    <div className="space-y-6">
+      {/* ── Back link ────────────────────────── */}
+      <Link
+        to="/"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-accent no-underline transition hover:gap-2.5"
+      >
+        <MdArrowBack className="text-base" /> All Books
+      </Link>
+
+      {/* ── Book info card ────────────────────── */}
+      <div className="glass space-y-5 p-6 sm:p-8">
         {editing ? (
-          <form onSubmit={handleEditSubmit} className="edit-form">
-            <h2>Edit Book</h2>
-            {editError && <div className="error-message">{editError}</div>}
-            <div className="form-group">
-              <label htmlFor="editTitle">Title</label>
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <h2 className="text-xl font-bold text-slate-900">Edit Book</h2>
+
+            {editError && (
+              <div className="rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700">
+                {editError}
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <label htmlFor="editTitle" className="text-sm font-medium text-slate-700">Title</label>
               <input
                 id="editTitle"
                 type="text"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
+                className="glass-input"
                 required
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="editAuthor">Author</label>
+
+            <div className="space-y-1.5">
+              <label htmlFor="editAuthor" className="text-sm font-medium text-slate-700">Author</label>
               <input
                 id="editAuthor"
                 type="text"
                 value={editAuthor}
                 onChange={(e) => setEditAuthor(e.target.value)}
+                className="glass-input"
                 required
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="editDescription">Description</label>
+
+            <div className="space-y-1.5">
+              <label htmlFor="editDescription" className="text-sm font-medium text-slate-700">Description</label>
               <textarea
                 id="editDescription"
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
+                className="glass-input min-h-[120px] resize-y"
                 required
               />
             </div>
-            <div className="form-actions">
-              <button type="submit" className="btn-primary">Save</button>
-              <button type="button" className="btn-secondary" onClick={handleEditCancel}>Cancel</button>
+
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-accent/25 transition hover:bg-accent/90"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={handleEditCancel}
+                className="rounded-xl border border-slate-200 bg-white/60 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-white/80"
+              >
+                Cancel
+              </button>
             </div>
           </form>
         ) : (
           <>
-            <h1>{book.title}</h1>
-            
-            <div className="question-meta">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              {book.title}
+            </h1>
+
+            <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500">
               <span>
-                Added by <strong>{book.user?.username || 'Unknown'}</strong>
+                Added by{' '}
+                <strong className="text-slate-700">{book.user?.username || 'Unknown'}</strong>
               </span>
+              <span className="text-slate-300">·</span>
               <span>{new Date(book.createdAt).toLocaleDateString()}</span>
             </div>
-            
-            <div className="question-body">
-              <p>{book.description}</p>
-            </div>
 
-            <div className="question-body">
+            <p className="leading-relaxed text-slate-700">{book.description}</p>
+
+            <p className="text-sm text-slate-600">
               <strong>Author:</strong> {book.author}
-            </div>
+            </p>
 
             {isOwner && (
-              <div className="owner-actions">
-                <button className="btn-secondary" onClick={handleEditStart}>Edit</button>
-                <button className="btn-danger" onClick={handleDelete}>Delete</button>
+              <div className="flex gap-3 border-t border-white/40 pt-4">
+                <button
+                  onClick={handleEditStart}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white/60 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-white/80"
+                >
+                  <MdEdit className="text-base" /> Edit
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/60 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100/80"
+                >
+                  <MdDelete className="text-base" /> Delete
+                </button>
               </div>
             )}
           </>
         )}
       </div>
 
-      <div className="answers-section">
-        <h2>{reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'}</h2>
-        
+      {/* ── Reviews section ───────────────────── */}
+      <div className="space-y-4">
+        <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900">
+          <MdRateReview className="text-accent" />
+          {reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'}
+        </h2>
+
         {reviews.length > 0 ? (
-          <div className="answers-list">
+          <div className="space-y-4">
             {reviews.map(review => (
-              <ReviewCard 
-                key={review.id} 
+              <ReviewCard
+                key={review.id}
                 review={review}
                 currentUserId={user?.id}
                 onReviewUpdated={loadBook}
@@ -184,15 +245,27 @@ const BookDetail = () => {
             ))}
           </div>
         ) : (
-          <p className="no-answers">No reviews yet. Be the first to review!</p>
+          <div className="glass flex flex-col items-center gap-2 py-12 text-center">
+            <p className="text-sm text-slate-500">
+              No reviews yet. Be the first to review!
+            </p>
+          </div>
         )}
       </div>
 
+      {/* ── Review form / login prompt ────────── */}
       {user ? (
         <ReviewForm bookId={book.id} onReviewCreated={loadBook} />
       ) : (
-        <div className="login-prompt">
-          <Link to="/login">Login</Link> or <Link to="/register">register</Link> to review this book
+        <div className="glass px-6 py-5 text-center text-sm text-slate-600">
+          <Link to="/login" className="font-semibold text-accent no-underline hover:underline">
+            Login
+          </Link>{' '}
+          or{' '}
+          <Link to="/register" className="font-semibold text-accent no-underline hover:underline">
+            register
+          </Link>{' '}
+          to review this book
         </div>
       )}
     </div>
