@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import app from '../app';
 import User from '../models/User';
+import Book from '../models/Book';
+import Review from '../models/Review';
 
 vi.mock('../models/User', () => ({
   default: {
@@ -10,10 +13,39 @@ vi.mock('../models/User', () => ({
   }
 }));
 
+vi.mock('../models/Book', () => ({
+  default: {
+    count: vi.fn()
+  }
+}));
+
+vi.mock('../models/Review', () => ({
+  default: {
+    count: vi.fn()
+  }
+}));
+
+vi.mock('../models/Index', () => ({}));
+
 const mockedUser = User as unknown as {
   findAll: ReturnType<typeof vi.fn>;
   findByPk: ReturnType<typeof vi.fn>;
 };
+
+const mockedBook = Book as unknown as {
+  count: ReturnType<typeof vi.fn>;
+};
+
+const mockedReview = Review as unknown as {
+  count: ReturnType<typeof vi.fn>;
+};
+
+const buildToken = (userId = 1) =>
+  jwt.sign(
+    { id: userId, email: 'user@example.com', username: 'testuser' },
+    process.env.JWT_SECRET || 'test-secret',
+    { expiresIn: '7d' }
+  );
 
 describe('User routes', () => {
   beforeEach(() => {
@@ -77,5 +109,35 @@ describe('User routes', () => {
 
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ message: 'Error fetching user' });
+  });
+
+  it('requires auth for /stats', async () => {
+    const response = await request(app).get('/api/users/stats');
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ message: 'No token provided' });
+  });
+
+  it('returns stats for the authenticated user', async () => {
+    mockedBook.count.mockResolvedValue(3);
+    mockedReview.count.mockResolvedValue(7);
+
+    const response = await request(app)
+      .get('/api/users/stats')
+      .set('Authorization', `Bearer ${buildToken(1)}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ books: 3, reviews: 7 });
+  });
+
+  it('returns 500 when stats lookup fails', async () => {
+    mockedBook.count.mockRejectedValue(new Error('DB error'));
+
+    const response = await request(app)
+      .get('/api/users/stats')
+      .set('Authorization', `Bearer ${buildToken(1)}`);
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: 'Error fetching user stats' });
   });
 });
