@@ -58,6 +58,9 @@ export const bookAPI = {
 
 // Review endpoints
 export const reviewAPI = {
+  getAll: () =>
+    api.get<Review[]>('/reviews'),
+  
   create: (bookId: number, data: CreateReviewData) => 
     api.post<Review>(`/books/${bookId}/reviews`, data),
   
@@ -74,7 +77,10 @@ export const userAPI = {
     api.get<User[]>('/users'),
 
   getById: (id: number) =>
-    api.get<User>(`/users/${id}`)
+    api.get<User>(`/users/${id}`),
+  
+  getStats: () =>
+    api.get<{ books: number; reviews: number }>('/users/stats')
 };
 
 export default api;

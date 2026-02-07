@@ -4,13 +4,15 @@ import authRoutes from './routes/auth';
 import bookRoutes from './routes/book';
 import reviewRoutes from './routes/review';
 import usersRoutes from './routes/users';
+// Import models to establish associations
+import './models/Index';
 
 export const createApp = () => {
   const app = express();
 
   app.use(
     cors({
-      origin: 'http://localhost:5173',
+      origin: ['http://localhost:5173', 'http://localhost:5174'],
       credentials: true
     })
   );

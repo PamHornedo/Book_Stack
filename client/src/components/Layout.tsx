@@ -1,6 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MdMenuBook, MdRateReview, MdBookmarkBorder } from 'react-icons/md';
+import { MdMenuBook, MdRateReview, MdPeople, MdAutoStories } from 'react-icons/md';
+import { useAuth } from '../context/AuthContext';
+import { userAPI } from '../services/api';
 
 interface LayoutProps {
   children: ReactNode;
@@ -9,7 +11,7 @@ interface LayoutProps {
 const NAV_ITEMS = [
   { to: '/', label: 'All Books', icon: MdMenuBook },
   { to: '/reviews', label: 'Reviews', icon: MdRateReview },
-  { to: '/reading-list', label: 'Reading List', icon: MdBookmarkBorder },
+  { to: '/users', label: 'Users', icon: MdPeople },
 ];
 
 const TRENDING_TAGS = [
@@ -22,6 +24,23 @@ const TRENDING_TAGS = [
 
 const Layout = ({ children }: LayoutProps) => {
   const { pathname } = useLocation();
+  const { user } = useAuth();
+  const [stats, setStats] = useState({ books: 0, reviews: 0 });
+
+  useEffect(() => {
+    if (user) {
+      loadStats();
+    }
+  }, [user]);
+
+  const loadStats = async () => {
+    try {
+      const response = await userAPI.getStats();
+      setStats(response.data);
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  };
 
   return (
     <div className="pt-24 pb-16">
@@ -83,13 +102,17 @@ const Layout = ({ children }: LayoutProps) => {
               </h3>
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="flex flex-col items-center justify-center rounded-lg bg-white/40 p-3 text-center">
-                  <div className="text-2xl mb-1">📚</div>
-                  <div className="text-lg font-bold text-slate-800">3</div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent mb-2">
+                    <MdAutoStories className="text-xl" />
+                  </div>
+                  <div className="text-lg font-bold text-slate-800">{stats.books}</div>
                   <div className="text-xs text-slate-500">Books</div>
                 </div>
                 <div className="flex flex-col items-center justify-center rounded-lg bg-white/40 p-3 text-center">
-                  <div className="text-2xl mb-1">✍️</div>
-                  <div className="text-lg font-bold text-slate-800">0</div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent mb-2">
+                    <MdRateReview className="text-xl" />
+                  </div>
+                  <div className="text-lg font-bold text-slate-800">{stats.reviews}</div>
                   <div className="text-xs text-slate-500">Reviews</div>
                 </div>
               </div>
@@ -98,7 +121,7 @@ const Layout = ({ children }: LayoutProps) => {
         </aside>
 
         {/* ── Main Content ────────────────────────── */}
-        <main className="lg:ml-64 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">{children}</main>
+        <main className="lg:ml-64 w-full lg:w-auto px-4 sm:px-6 lg:px-8 lg:pr-6">{children}</main>
       </div>
     </div>
   );

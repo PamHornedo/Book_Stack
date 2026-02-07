@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import AddBook from './pages/AddBook';
 import BookDetail from './pages/BookDetail';
 import Users from './pages/Users';
+import Reviews from './pages/Reviews';
 
 function App() {
   return (
@@ -45,6 +46,14 @@ function App() {
               element={
                 <Layout>
                   <Users />
+                </Layout>
+              }
+            />
+            <Route
+              path="/reviews"
+              element={
+                <Layout>
+                  <Reviews />
                 </Layout>
               }
             />
